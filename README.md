@@ -15,8 +15,16 @@ https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-co
 # provide one set of the following for each task
 
 # 1) Business background
-- business problem
-- benefits if the problem is solved
+- Problem statement
+  - Ideal: The ideal situation if there wasn’t a problem
+  - Reality (Who/What/Where): Describe what the current reality is for your company or organization including answers to the who, what, where questions
+  - Consequences (Why): Identify what the consequences of the problem
+  - Proposal: One or more possible solutions to the problem
+- Hypothesis
+  - If: Summary of area to be addressed or overall statement about what you are trying to accomplish
+  - By: Action to be taken, i.e. the “HOW”
+  - Will: Result or KPI, ideally a single metric
+  - Because: Overall insight that can be proven or falsified by experiments
 - data available
 - business terminology
 - data mining goal
@@ -96,4 +104,3 @@ https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-co
 - list possible actions
   - with reasons for / against each option
   - rank each possible action
-  - 
