@@ -15,6 +15,7 @@
 - Business terminology
 - Analytical problem
   - <img width="566" alt="image" src="https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/7ad62456-6096-4dde-ae68-0e386c60732f">
+  - ![Alt text](image.png)
 
 - Success criteria
   - Qualitative assessment of the matches
