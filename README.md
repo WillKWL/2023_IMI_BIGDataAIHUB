@@ -12,8 +12,8 @@ Financial Institutions are used by criminals to “legitimize” money generated
 - Diminishing returns of adding more headcount
 - Criminals are constantly innovating on ways to use financial system to “legitimize” their funds
 
-# Ask from Scotiabank to address challenges across 3 stages of Money laundering
-- The act of “turning the proceeds of crime into cash or property that looks legitimate and can be used without suspicion”
+# Ask from Scotiabank
+- Address challenges across 3 stages of Money laundering (i.e. the act of “turning the proceeds of crime into cash or property that looks legitimate and can be used without suspicion”)
 - Stage 1: Placement
   - Money laundering starts by placing funds derived from illegal activities into the financial system in the form of cash deposits, cheque, money transfers or any type of transaction where money enters the Bank.
   - Placement can be identified at the frontline by understanding the source of the funds.
