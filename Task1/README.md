@@ -3,9 +3,7 @@
 - Made reference to Monetary Authority of Singapore's [2022 AML name screening practices](https://www.mas.gov.sg/-/media/MAS-Media-Library/publications/monographs-or-information-paper/IMD/2022/Strengthening-AML-CFT-Name-Screening-Practices.pdf)
 
 # Overview
-![Alt text](data/images/image-7.png)
 ![Alt text](data/images/image-8.png)
-![Alt text](data/images/image-9.png)
 
 # 1) Business background
 - Problem statement
