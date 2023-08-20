@@ -1,7 +1,35 @@
-# 2023_IMI_BIGDataAIHUB
-https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-competition
-
+# Detect money laundering and criminal networks
+- Case competition description
+  - https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-competition
+- 1st place announcement
 - include our presentation (visualization of what this project is about)
+
+# Motivation
+Financial Institutions are used by criminals to “legitimize” money generated from criminal activities, hence banks are expected by society and regulators to act proactively in detecting and stopping criminals from using the financial system to access their money through effective monitoring and reporting to authorities.
+
+# Complication
+- Number of clients and transaction volume are large and only expected to grow in the future
+- Diminishing returns of adding more headcount
+- Criminals are constantly innovating on ways to use financial system to “legitimize” their funds
+
+# Ask from Scotiabank
+Use suitable data analytics tools and techniques to help Scotiabank detect financial crimes:
+- Find known high risk people in our customer base using public data
+- Score clients according to their likelihood of being involved in Money Laundering using transactional data
+- Enhance scoring and visualize networks using connections between clients
+
+# 3 stages of Money laundering
+- The act of “turning the proceeds of crime into cash or property that looks legitimate and can be used without suspicion”
+- Stage 1: Placement
+  - Money laundering starts by placing funds derived from illegal activities into the financial system in the form of cash deposits, cheque, money transfers or any type of transaction where money enters the Bank.
+  - Placement can be identified at the frontline by understanding the source of the funds.
+- Stage 2: Layering
+  - Second stage is for a criminal to move funds around to hide their illegal origins. It may consist of multiple transactions without clear purpose to move money between products, clients, bank, corporations and geographies.
+  - Layering can be detected by understanding transaction purpose and if it is unusual for the customer.
+- Stage 3: Integration
+  - The final stage integrates the illicit proceeds, that now appear to be clean funds, into the economy as "normal" personal or business transactions. By this stage is hard to distinguish between legal and illegal money, and the criminals can now use these funds without suspicion.
+  - Integration can be detected by knowing the client and monitor for odd and unusual transactions.
+
 - description
 - dataset
 - how to download the model
@@ -11,96 +39,3 @@ https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-co
 - contributors
 - Key highlights (CV items)
 - next steps
-
-# provide one set of the following for each task
-
-# 1) Business background
-- Problem statement
-  - Ideal: The ideal situation if there wasn’t a problem
-  - Reality (Who/What/Where): Describe what the current reality is for your company or organization including answers to the who, what, where questions
-  - Consequences (Why): Identify what the consequences of the problem
-  - Proposal: One or more possible solutions to the problem
-- Hypothesis
-  - If: Summary of area to be addressed or overall statement about what you are trying to accomplish
-  - By: Action to be taken, i.e. the “HOW”
-  - Will: Result or KPI, ideally a single metric
-  - Because: Overall insight that can be proven or falsified by experiments
-- data available
-- business terminology
-- data mining goal
-  - task 1: name matching
-  - task 2A: ranking
-  - task 2B: classification
-  - task 3: embedding
-- success criteria
-  - task 1: runtime and qualitative assessment
-  - task 2A: confusion matrix and multi-partite AUC
-  - task 2B: gain and lift, average precision
-  - task 3: improvement on task 2A and B
- 
-# 2) Data Understanding
-- volumetric analysis
-  - history of the data
-  - quantity of data available (number of rows and what columns are there)
-- attribute types and values
-  - check attribute types
-  - check attribute value ranges
-  - meaning of each attribute in business terms
-  - basic statistics of each attribute (distribution, average, min, max, sd, mode, skewness etc.)
-  - attributes (which ones are relevant / irrelevant)
-  - industry domain knowledge
-  - data imbalance?
-- data exploration
-  - hypothesis
-- data quality
-  - coverage (if all possible values are represented)
-  - missing values
-  - plausibility of values
-
-# 3) Data preparation
-- data cleaning report
-  - decisions and actions taken to address data quality problems
-- derived attributes
-  - domain knowledge
-  - constraints in modeling approach (e.g. heteroscedasticity)
-  - impute missing values
-- single-attribute transformation
-
-# 4) Modeling
-- consider a list of appropriate modeling techniques
-- constraints for no deep learning (interpretability, computation time, knowledge)
-- assumptions for chosen model
-- define procedure to test a model's quality and validity
-  - train / test split
-  - how to define folds for cross validation
-  - performance measure
-- build model
-  - rationale for initial hyperparameters
-  - hyperparameter tuning
-- model description
-  - final set of hyperparameters
-- assess model
-  - evaluation criteria / lift and gain tables
-  - test result
-  - interpreation of performance on unseen data
-  - interpretaion in business terms
-  - analyze potential deployment of each result
-  - insights in why a certain model / certain hyperparameter lead to good / bad results
-
-# 5) Evaluation
-- Results = Models + Findings
-- findings that are important in
-  - meeting business objectives
-  - leading to new questions
-  - recommendations for new data mining projects
-- review process
-  - for each stage, ask
-    - was it necessary
-    - was it executed optimally
-    - in what ways can it be improved
-  - identify failures
-  - identify misleading steps
-  - identify possible alternative actions and / or unexpected paths in the process
-- list possible actions
-  - with reasons for / against each option
-  - rank each possible action
