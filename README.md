@@ -1,15 +1,20 @@
 # 2023_IMI_BIGDataAIHUB
 https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-competition
 
-- include our presentation
-- check github project proper structure
+- include our presentation (visualization of what this project is about)
+- description
+- dataset
+- how to download the model
+- installation
+- setup
+- inference demo
+- contributors
 - Key highlights (CV items)
 - next steps
 
 # provide one set of the following for each task
 
 # 1) Business background
-- include presentation
 - business problem
 - benefits if the problem is solved
 - data available
