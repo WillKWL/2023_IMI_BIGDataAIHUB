@@ -1,3 +1,8 @@
+# Highlights
+- 
+# Overview
+![Alt text](image.png)
+
 # 1) Business background
 - Problem statement
   - __Ideally__, financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by well-trained staff.
@@ -14,7 +19,10 @@
   - [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/)
 - Business terminology
 - Analytical problem
-  - NLP fuzzy matching algorithm to systematically check new client names against watchlists
+  - Improve Task 2 models by using client connections to either:
+    - Extract new features
+    - Fit graph models directly
+    - Visualize interesting networks
 - Success criteria
   - Qualitative assessment of the matches
  

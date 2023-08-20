@@ -1,3 +1,7 @@
+# Highlights
+- 
+# Overview
+![Alt text](image-1.png)
 # 1) Business background
 - Problem statement
   - __Ideally__, financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by well-trained staff.
@@ -9,13 +13,18 @@
       - comprehensive enough to consider addiitional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations).
   - Suspicious clients will not be onboarded, or if they are already onboarded, their accounts will be frozen
 
-- Data available
-  - Scotiabank list of 1 million customer names (synthetic data)
+- Data available 
+  - Scotiabank synthetic data sets
+    - UofT_nodes.csv (KYC, Transactional data and Risk Rating)
+      - 1 million rows with 20 columns
+    - UofT_edges.csv (Connections between customers in terms of money sent via EMT from one customer to another)
+      - 466 thousand rows with source and target
   - [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/)
 - Business terminology
 - Analytical problem
-  - <img width="566" alt="image" src="https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/7ad62456-6096-4dde-ae68-0e386c60732f">
+  - Classify customers into Low, Medium and High risk
   - ![Alt text](image.png)
+  - 
 
 - Success criteria
   - Qualitative assessment of the matches
