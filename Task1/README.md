@@ -11,7 +11,7 @@
 - Problem statement
   - __Ideally__, financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by well-trained staff.
   - __In practice__, the sheer volume of new account registrations necessitates an automated screening system to identify trustworthy customers. However, criminals can manipulate personal identification details to exploit vulnerabilities in this system.
-  - __Consequences:__ For both customers and the society as a whole, this situation could lead to an inability to effectively counter money-laundering activities. For banks, it poses a substantial risk of undermining their reputation and overall performance.
+  - __Consequences:__ For both customers and the society as a whole, ineffective combat against money laundering and terrorist activity financing can potentially bring tremendous harm and disruption to the financial system . For banks, it poses a substantial risk of undermining their reputation and overall performance.
   - __Proposal:__ One proposal is to find known high risk people in customer database using public data with a <ins>screening algorithm</ins> that can be
     - Flexible enough to handle minor discrepancies in spelling,
     - Efficient enough to process a significant volume of matches, and
