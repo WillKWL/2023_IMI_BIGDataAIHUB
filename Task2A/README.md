@@ -1,69 +1,157 @@
 # Highlights
 - 
 # Overview
-![Alt text](image-1.png)
+![Alt text](data/images/image.png)
+![Alt text](data/images/image-1.png)
+![Alt text](data/images/image-2.png)
+![Alt text](data/images/image-3.png)
 # 1) Business background
 - Problem statement
-  - __Ideally__, financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by well-trained staff.
-  - __In practice__, the sheer volume of new account registrations necessitates an automated screening system to identify trustworthy customers. However, criminals can manipulate personal identification details to exploit vulnerabilities in this system.
-  - __Consequences:__ For both customers and the society as a whole, this situation could lead to an inability to effectively counter money-laundering activities. For banks, it poses a substantial risk of undermining their reputation and overall performance.
-  - __Proposal:__ One proposal is to find known high risk people in customer database using public data with a <ins>screening algorithm</ins> that can be
-  -   - flexible enough to handle minor discrepancies in spelling,
-      - efficient enough to process a significant volume of matches, and
-      - comprehensive enough to consider addiitional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations).
-  - Suspicious clients will not be onboarded, or if they are already onboarded, their accounts will be frozen
+  - __Ideally__, financial institutions can identify every money-laundering criminals who have infiltrated the banking network based on transaction data, and subsequently stop providing banking services to them.
+  - __In practice__, criminals can manipulate their activities to mimic like regular customers by avoiding conspicuously large or frequent transactions.
+  - __Consequences:__ While misclassifying a regular customer as a criminal may damage relationship with the customer, misclassifying a criminal as a regular customer is far worse with the potential to face substantial reputational damage and heavy regulatory fines.
+  - __Proposal:__ We can score customers as low, medium and high risk tiers based on their likelihood of engaging in money-laundering activities.
+  - __Use Case:__ Instead of resorting to a binary decision to deny a customer access to banking services, we can leverage the customer's risk score to enable a spectrum of decisions. For instance,
+    - How long to freeze the customer's account?
+    - How much monitoring to apply to the customer's activities?
+    - What types of activity to provide access to the customer?
 
 - Data available 
-  - Scotiabank synthetic data sets
-    - UofT_nodes.csv (KYC, Transactional data and Risk Rating)
-      - 1 million rows with 20 columns
-    - UofT_edges.csv (Connections between customers in terms of money sent via EMT from one customer to another)
-      - 466 thousand rows with source and target
-  - [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/)
+  - Scotiabank synthetic data: UofT_nodes.csv (KYC, Transactional data and Risk Rating)
 - Business terminology
+  - [FINTRAC indicators](https://fintrac-canafe.canada.ca/guidance-directives/transaction-operation/indicators-indicateurs/fin_mltf-eng#s8) of a high-risk customer include:
+    - Anonymity -> Multiple transactions below the reporting threshold amount
+    - Speed over cost-effectiveness -> High volume of wire transfers instead of one single large transfer
 - Analytical problem
-  - Classify customers into Low, Medium and High risk
-  - ![Alt text](image.png)
-  - 
-
-- Success criteria
-  - Qualitative assessment of the matches
+  - Ordinal classification: classify customers into Low, Medium and High risk
  
 # 2) Data Understanding
-- volumetric analysis
-  - history of the data
-  - quantity of data available (number of rows and what columns are there)
-- attribute types and values
-  - check attribute types
-  - check attribute value ranges
-  - meaning of each attribute in business terms
-  - basic statistics of each attribute (distribution, average, min, max, sd, mode, skewness etc.)
-  - attributes (which ones are relevant / irrelevant)
-  - industry domain knowledge
-  - data imbalance?
-- data exploration
-  - hypothesis
-- data quality
+- Volumetric analysis
+  - Unit of analysis: customer
+    - Only summary statistics (sum and count) of transactions are available
+  - History of the data
+    - Last 12 months
+  - Number of rows = 1 million
+  - Number of columns = 20
+    - 1 target variable (risk rating) and 19 features
+- <Attribute (type): business meaning>
+  - CUSTOMER_ID (int): customer_id <font color='red'> (unique identifier) </font>
+  - RISK (str, categorical): customer risk rating <font color='red'> (target) </font>
+  - BIRTH_DT (Date): date of birth
+  - CUST_ADD_DT (Date): date of joining the bank
+  - OCPTN_NM (int): occupation code -> occupation risk
+  - RES_CNTRY_CA (Bool): whether customer lives in Canada
+  - CNTRY_OF_INCOME_CA (Bool): whether customer receives income in Canada
+  - PEP_FL (Bool): whether person is PEP
+  - CASH_SUM_IN (float): sum of cash in-transfer LTM
+  - CASH_CNT_IN (int): count of cash in-transfer LTM
+  - CASH_SUM_OUT (float): sum of cash out-transfer LTM
+  - CASH_CNT_OUT (int): count of cash out-transfer LTM
+  - WIRES_SUM_IN (float): sum of wire in-transfer LTM
+  - WIRES_CNT_IN (int): count of wire in-transfer LTM
+  - WIRES_SUM_OUT (float): sum of wire out-transfer LTM
+  - WIRES_CNT_OUT (int): count of wire out-transfer LTM
+  - COUNTRY_RISK_INCOME (int): country of income risk rating
+  - COUNTRY_RISK_RESIDENCY (int): country of residency risk rating
+  - NAME (str): name of customer
+  - Gender (bool): gender of customer
+- Hypothesis with Money Laundering indicators involving transactions (https://fintrac-canafe.canada.ca/guidance-directives/transaction-operation/indicators-indicateurs/fin_mltf-eng)
+  - Client frequents multiple locations utilizing cash, prepaid credit cards or money orders/cheques/drafts to send wire transfers overseas.
+    - high count of transactions
+  - Funds are deposited or received into several accounts and then consolidated into one before transferring the funds outside the country.
+    - multiple IN_CNT
+    - there are no limits in accepting e-transfer https://help.scotiabank.com/article/are-there-interac-e-transfer-limits?origin=scotia-connect
+  - Immediately after transferred funds have cleared, the client moves funds, to another account or to another person or entity.
+    - IN_SUM similar to OUT_SUM
+  - Client sending to, or receiving wire transfers from, multiple clients.
+    - high IN_CNT, high OUT_CNT
+- Data exploration
+  - Univariate analysis
+    - Skewness and varying scales in numerical variables
+      - <img src="../data/image/2023-08-21-21-02-07.png"  width="1000">
+    - Numerous categorical variables have a majority class >= 90%
+      - <img src="../data/image/2023-08-21-21-02-50.png"  width="1000">
+  - Bivariate analysis
+    - Correlation between numerical variables
+      - <img src="../data/image/2023-08-21-21-09-13.png"  width="1000">
+    - Conditional entropy between categorical variables
+      - <img src="../data/image/2023-08-21-21-09-59.png"  width="1000">
+  - Difficult to separate the three classes without any transformation performed on numerical variables
+    - <img src="../data/image/2023-08-21-21-13-16.png"  width="1000">
+    - <img src="../data/image/2023-08-21-21-15-26.png"  width="1000">
+  - Some categorical variables seem to provide a strong signal to separate the low risk rating from the other two classes
+    - <img src="../data/image/2023-08-21-21-23-05.png"  width="1000">
+- Class imbalance
+  - <img src="../data/image/2023-08-21-20-34-22.png"  width="300">
+- Data quality
   - coverage (if all possible values are represented)
   - missing values
+    - Missing name for some customers might be a deliberate effort to avoid detection
+    - Missingness in occupation risk, days since joined and gender seems to be random
   - plausibility of values
+    - Invalid records with CNT = 0 but SUM != 0
+    - Customers with age >= 118 (older than the world's record holder)
 
 # 3) Data preparation
-- data cleaning report
+- <img src="../data/image/2023-08-21-20-59-56.png"  width="300"> 
+- Data cleaning report
+  - Fix datatypes
+    - datetime
+      - BIRTH_DT 
+      - CUST_ADD_DT
+    - int -> str
+      - CUSTOMER_ID
+    - unordered category
+      - OCPTN_NM (contains NA so wait until train test split)
+      - PEP_FL
+      - RES_CNTRY_CA
+      - CNTRY_OF_INCOME_CA
+      - GENDER
+    - ordered category
+      - COUNTRY_RISK_INCOME
+      - COUNTRY_RISK_RESIDENCY
+      - RISK
   - decisions and actions taken to address data quality problems
 - derived attributes
   - domain knowledge
+    - KYC information
+      - Age and Days since joining
+    - Average transaction amt ($) = SUM / CNT for both incoming and outgoing cash flows (size of transaction, as a large sum can be due to a large count)
+    - Ratio of average cash to average wire transfers
+    - Balance of cash and wire transfers
   - constraints in modeling approach (e.g. heteroscedasticity)
   - impute missing values
+    - Dummy variables if it might be a deliberate effort to avoid detection
+      - Add dummy variable to indicate missing name 
+      - Add dummy variable to indicate data entry error (CNT = 0 but SUM != 0)
+    - Random imputation for variables with missingness completely at random (MCAR)
 - single-attribute transformation
+  - Non-linear quantile transformation to promote separation among the three classes
+    - assumption: only the relative rankings but not the values of each feature matters 
+    - <img src="../data/image/2023-08-21-21-14-36.png"  width="1000">
+  - Categorical variables 
+    - Unordered category: OneHotEncoder
+      - No need to collapse infrequent categories -> infrequent class could represent minority class in target variable
+    - Ordered category: thermometer encoding
+      - [(2012) Evaluating the Impact of Categorical Data Encoding and Scaling on Neural Network Classification Performance: The Case of Repeat Consumption of Identical Cultural Goods (Elena Fitkov-Norris, Samireh Vahid, and Chris Hand from Kingston University London)](https://www.researchgate.net/publication/262173733_Evaluating_the_Impact_of_Categorical_Data_Encoding_and_Scaling_on_Neural_Network_Classification_Performance_The_Case_of_Repeat_Consumption_of_Identical_Cultural_Goods)
+    - MinMaxScaler to rescale to -2 to +2 (95% confidence interval of normal distribution)
+- Clean data
+  - <img src="../data/image/2023-08-21-21-31-55.png"  width="1000">
 
 # 4) Modeling
+- Extended Binary and FnH classifier
+- performance measure: 
+  - macro average MAE
+  - multipartite AUC
+    - (2009, Furnkranz, Hullermeier, Vanderlooy) Binary Decomposition Methods for Multipartite Ranking (https://link.springer.com/content/pdf/10.1007/978-3-642-04180-8_41.pdf)
+    - sklearn _average_multiclass_ovo_score https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/_base.py
+    - ![Alt text](data/images/image-4.png)
 - consider a list of appropriate modeling techniques
 - constraints for no deep learning (interpretability, computation time, knowledge)
 - assumptions for chosen model
 - define procedure to test a model's quality and validity
-  - train / test split
-  - how to define folds for cross validation
+  - train / test split and cross validation
+    - class imbalance -> stratified shuffle split
   - performance measure
 - build model
   - rationale for initial hyperparameters

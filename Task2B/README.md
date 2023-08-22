@@ -12,6 +12,7 @@
   -   - flexible enough to handle minor discrepancies in spelling,
       - efficient enough to process a significant volume of matches, and
       - comprehensive enough to consider addiitional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations).
+  - How to use
   - Suspicious clients will not be onboarded, or if they are already onboarded, their accounts will be frozen
 
 - Data available

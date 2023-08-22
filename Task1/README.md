@@ -16,7 +16,7 @@
     - Flexible enough to handle minor discrepancies in spelling,
     - Efficient enough to process a significant volume of matches, and
     - Comprehensive enough to consider additional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations).
-  - Suspicious clients will not be allowed to open an account, or if they already did, their accounts will be frozen
+  - __Use Case:__ Suspicious clients will not be allowed to open an account, or if they already did, their accounts will be frozen
 - Data sources
   - UofT_nodes.csv (Scotiabank list of 1 million synthetic customer names)
   - [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/) (430 thousand sanctioned persons)
