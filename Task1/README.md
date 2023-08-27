@@ -3,27 +3,19 @@
 - Made reference to Monetary Authority of Singapore's [2022 AML name screening practices](https://www.mas.gov.sg/-/media/MAS-Media-Library/publications/monographs-or-information-paper/IMD/2022/Strengthening-AML-CFT-Name-Screening-Practices.pdf)
 
 # Overview
-![Alt text](data/images/image-8.png)
+<img src="../data/image/task1-image-8.png"  width="1000">
 
 # 1) Business background
-- Problem statement
-  - __Ideally__, financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by well-trained staff.
-  - __In practice__, the sheer volume of new account registrations necessitates an automated screening system to identify trustworthy customers. However, criminals can manipulate personal identification details to exploit vulnerabilities in this system.
-  - __Consequences:__ For both customers and the society as a whole, ineffective combat against money laundering and terrorist activity financing can potentially bring tremendous harm and disruption to the financial system . For banks, it poses a substantial risk of undermining their reputation and overall performance.
-  - __Proposal:__ One proposal is to find known high risk people in customer database using public data with a <ins>screening algorithm</ins> that can be
-    - Flexible enough to handle minor discrepancies in spelling,
-    - Efficient enough to process a significant volume of matches, and
-    - Comprehensive enough to consider additional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations).
-  - __Use Case:__ Suspicious clients will not be allowed to open an account, or if they already did, their accounts will be frozen
+- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/README.md#L20)
+- Analytical problem
+  - NLP fuzzy matching algorithm that can continuously monitor client names with most updated watchlists
 - Data sources
   - UofT_nodes.csv (Scotiabank list of 1 million synthetic customer names)
   - [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/) (430 thousand sanctioned persons)
-- Business objective
-  - Detect 50 Bad actors in our customer base using public data sources
-- Analytical problem
-  - NLP fuzzy matching algorithm that can continuously monitor client names with most updated watchlists
+- Use Case: Suspicious clients will not be allowed to open an account, or if they already did, their accounts will be frozen
 - Success criteria
   - Qualitative assessment of the 50 bad actor matches
+- <img src="../data/image/2023-08-26-12-37-11.png"  width="1000">
  
 # 2) Data Understanding
 - Attributes: 
@@ -79,7 +71,7 @@
     - Positive examples: Possible variations of the same name (e.g.     'Young MarieMildren', 'Young M Mildren', 'Young, Maarrie Mildren', 'Young, Mildren', 'Young, aMrei Mildren', 'Marie Mildren Young', 'Yung Mary Mildren' etc.)
     - Negative examples: Names that are not the same person (e.g. Arei mr Remi.)
   - A good fuzzy matching algorithm should be able to assign a high similarity score to these variations
-  - ![Alt text](data/images/image-1.png)
+  - <img src="../data/image/task1-image-1.png"  width="1000">
 - Final matching algorithm
   - Other considerations beyond just the name itself
     - Date of birth
@@ -96,7 +88,7 @@
 
 # 5) Evaluation
 - Output = list of bad actors
-  - ![Alt text](data/images/image-3.png)
+  - <img src="../data/image/task1-image-3.png"  width="1000">
 - Issues with current solution
   - Heuristic-driven choice of bag-of-words with 3-gram as our choice of vector space model
   - Heuristic-driven decision to combine similarity measures across name, date of birth and other personal information into an average similarity score is not optimal

@@ -1,31 +1,36 @@
 # Highlights
 - 
 # Overview
-![Alt text](data/images/image.png)
-![Alt text](data/images/image-1.png)
-![Alt text](data/images/image-2.png)
-![Alt text](data/images/image-3.png)
+<img src="../data/image/task2A-image.png"  width="1000">
+<img src="../data/image/task2A-image-1.png"  width="1000">
+<img src="../data/image/task2A-image-2.png"  width="1000">
+<img src="../data/image/task2A-image-3.png"  width="1000">
 # 1) Business background
-- Problem statement
-  - __Ideally__, financial institutions can identify every money-laundering criminals who have infiltrated the banking network based on transaction data, and subsequently stop providing banking services to them.
-  - __In practice__, criminals can manipulate their activities to mimic like regular customers by avoiding conspicuously large or frequent transactions.
-  - __Consequences:__ While misclassifying a regular customer as a criminal may damage relationship with the customer, misclassifying a criminal as a regular customer is far worse with the potential to face substantial reputational damage and heavy regulatory fines.
-  - __Proposal:__ We can score customers as low, medium and high risk tiers based on their likelihood of engaging in money-laundering activities.
-  - __Use Case:__ Instead of resorting to a binary decision to deny a customer access to banking services, we can leverage the customer's risk score to enable a spectrum of decisions. For instance,
-    - How long to freeze the customer's account?
-    - How much monitoring to apply to the customer's activities?
-    - What types of activity to provide access to the customer?
-
+- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/README.md#L28)
+- Analytical problem = <ins>Ordinal classification</ins>
+  - Classify customers into Low, Medium and High risk
+  - nominal
+    - order doesn't matter
+  - ordinal
+    - order matters but difference is not in fixed interval
+  - interval
+    - order matters + fixed interval 
+  - ratio
+    - order matters + fixed interval + only positive
 - Data available 
   - Scotiabank synthetic data: UofT_nodes.csv (KYC, Transactional data and Risk Rating)
+- Use Case: Instead of resorting to a binary decision to deny a customer access to banking services, we can leverage the customer's risk score to enable a spectrum of decisions. For instance,
+  - How long to freeze the customer's account?
+  - How much monitoring to apply to the customer's activities?
+  - What types of activity to provide access to the customer?
 - Business terminology
   - [FINTRAC indicators](https://fintrac-canafe.canada.ca/guidance-directives/transaction-operation/indicators-indicateurs/fin_mltf-eng#s8) of a high-risk customer include:
     - Anonymity -> Multiple transactions below the reporting threshold amount
     - Speed over cost-effectiveness -> High volume of wire transfers instead of one single large transfer
-- Analytical problem
-  - Ordinal classification: classify customers into Low, Medium and High risk
+
  
 # 2) Data Understanding
+- <img src="../data/image/2023-08-26-12-37-42.png"  width="1000">
 - Volumetric analysis
   - Unit of analysis: customer
     - Only summary statistics (sum and count) of transactions are available
@@ -115,7 +120,7 @@
 - derived attributes
   - domain knowledge
     - KYC information
-      - Age and Days since joining
+      - Age and Years since joining
     - Average transaction amt ($) = SUM / CNT for both incoming and outgoing cash flows (size of transaction, as a large sum can be due to a large count)
     - Ratio of average cash to average wire transfers
     - Balance of cash and wire transfers
@@ -126,6 +131,7 @@
       - Add dummy variable to indicate data entry error (CNT = 0 but SUM != 0)
     - Random imputation for variables with missingness completely at random (MCAR)
 - single-attribute transformation
+  - <img src="../data/image/2023-08-26-12-38-55.png"  width="1000">
   - Non-linear quantile transformation to promote separation among the three classes
     - assumption: only the relative rankings but not the values of each feature matters 
     - <img src="../data/image/2023-08-21-21-14-36.png"  width="1000">
@@ -135,39 +141,134 @@
     - Ordered category: thermometer encoding
       - [(2012) Evaluating the Impact of Categorical Data Encoding and Scaling on Neural Network Classification Performance: The Case of Repeat Consumption of Identical Cultural Goods (Elena Fitkov-Norris, Samireh Vahid, and Chris Hand from Kingston University London)](https://www.researchgate.net/publication/262173733_Evaluating_the_Impact_of_Categorical_Data_Encoding_and_Scaling_on_Neural_Network_Classification_Performance_The_Case_of_Repeat_Consumption_of_Identical_Cultural_Goods)
     - MinMaxScaler to rescale to -2 to +2 (95% confidence interval of normal distribution)
-- Clean data
+- Final pipeline to prepare data for modeling
   - <img src="../data/image/2023-08-21-21-31-55.png"  width="1000">
+  - <img src="../data/image/2023-08-23-22-21-44.png"  width="1000">
 
 # 4) Modeling
-- Extended Binary and FnH classifier
-- performance measure: 
-  - macro average MAE
-  - multipartite AUC
-    - (2009, Furnkranz, Hullermeier, Vanderlooy) Binary Decomposition Methods for Multipartite Ranking (https://link.springer.com/content/pdf/10.1007/978-3-642-04180-8_41.pdf)
-    - sklearn _average_multiclass_ovo_score https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/_base.py
-    - ![Alt text](data/images/image-4.png)
-- consider a list of appropriate modeling techniques
-- constraints for no deep learning (interpretability, computation time, knowledge)
+- Problem formulation: <ins>Ordinal Classification</ins> (aka Ordinal Regression)
+  - Main paper: [(2015) Ordinal Regression Methods: Survey and Experimental Study](https://ieeexplore.ieee.org/abstract/document/7161338)
+    - One of the approaches was binary decomposition where an ordinal classification problem can be broken down into binary subproblems
+      - Ordered partition
+      - OneVsNext decomposition
+      - OneVsFollowers decomposition
+      - OneVsPrevious decomposition
+    - Benefits: 
+      - Our results show that binary decomposition provides significant improvement in test performance over the baseline method especially for linear models
+      - Supervision from AML regulators necessitates a high degree of model interpretability
+      - Binary classifiers are well-studied and many algorithms are readily available
+    - "It is important to note that naïve approaches and ordinal binary decompositions can be applied using almost any base binary classifier or regressor."
+  - (Baseline) Multi-class nominal classification
+    - Straightforward but cost function ignores ranking of the labels
+  - Options to implement and compare with our baseline:
+    - (Option 1) K - 1 binary classification
+      - Implemented as FnHClassifier(BaseEstimator, ClassifierMixin) (quote the source code line here)
+      - Paper: (2001, Frank and Hall) [A simple approach to ordinal classification](https://www.cs.waikato.ac.nz/~eibe/pubs/ordinal_tech_report.pdf)
+      - A K-class ordinal problem can be converted into K-1 binary class problems
+      - Potential issue: rank inconsistency
+        - e.g. the outputs from K-1 binary class problems are [0.91, 0.91, 0.49, 0.72, 0.11]. Iterating from left to right would result in a prediction label of 2 (since 0.49 < 0.5), even though the right answer might just as well be 4 (since 0.72 > 0.5)
+    - (Option 2) Extended binary classification
+      - Implemented as ExtendedBinary(BaseEstimator, ClassifierMixin) (quote the source code line here)
+      - Paper: (2007, Li and Lin) [Ordinal Regression by Extended Binary Classification](https://papers.nips.cc/paper/2006/file/019f8b946a256d9357eadc5ace2c8678-Paper.pdf)
+      - (2007 Cardoso, Costa) [Learning to Classify Ordinal Data: The Data Replication Method](https://www.jmlr.org/papers/volume8/cardoso07a/cardoso07a.pdf)
+        - Additional dimension to fit 2 binary problems at once
+      - C x C cost matrix with each row = V-shaped with higher costs at the two ends
+  - Final approach: OneVsFollowers decomposition (i.e. decomposing into Low vs Medium, High and Medium vs High) + Binary classifier
+    - Result suggests significant improvement over baseline (i.e. multi-class nominal classification)
+    - <img src="../data/image/2023-08-23-22-20-25.png"  width="1000">
+- Evaluation metric = <ins>Multipartite AUC</ins>
+    - Implemented as MultipartiteAUC (quote the source code line here)
+    - Paper: (2009, Furnkranz, Hullermeier, Vanderlooy) [Binary Decomposition Methods for Multipartite Ranking](https://link.springer.com/content/pdf/10.1007/978-3-642-04180-8_41.pdf)
+    - Intuition: a model with a high multipartite AUC score can rank 
+      - Medium risk customers above low risk customers & 
+      - High risk customers above low risk customers &
+      - High risk customers above medium risk customers
+      - <img src="../data/image/task2A-image-4.png"  width="1000">
+    - Macro-weighted to address class imbalance
+    - Essentially OneVsOne Macro AUC but with the flexibility to calculate a weighted average
+      - Also see sklearn implementation of [average_multiclass_ovo_score](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/_base.py)
+    - Other resources
+      - (2001, Hand and Till) [A Simple Generalisation of the Area Under the ROC Curve for Multiple Class Classification Problems](https://link.springer.com/article/10.1023/A:1010920819831)
+      - (2009, Baccianella, Andrea Esuli and Fabrizio Sebastiani) [Evaluation Measures for Ordinal Regression](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5364825)
+      - (2022) [Class distance weighted cross-entropy loss](https://arxiv.org/pdf/2202.05167.pdf)
+    
+- Consider a list of appropriate modeling techniques
+  - logistic regression
+  - Gaussian naive Bayes
+  - decision tree
+  - extra trees
+  - histogram-based gradient boosting
+  - bagging classifier
+  - adaboost
+  - LightGBM
+- Procedure to test a model's quality and validity
+  - Stratified shuffle split for both train-test split and cross-validation in hyperparameter tuning due to class imbalance
+    - 80-20 train-test split
+    - 5-fold cross validation
+  - Evaluation metric = multipartite AUC
+- Rationale for hyperparameter tuning
+  - Shortlisted LightGBM and histogram-based gradient boosting based on 5-fold cross validation score
+    - <img src="../data/image/2023-08-23-22-34-50.png"  width="1000">
+  - Not much hyperparameter tuning is needed as the default parameters already perform well
+    - Tune learning rate and number of estimators for both LightGBM and histogram-based gradient boosting to improve generalization performance
+- Final model 
+  - LightGBM as the best model after hyperparameter tuning with RandomizedSearchCV
+    - <img src="../data/image/2023-08-23-22-38-22.png"  width="1000">
 - assumptions for chosen model
-- define procedure to test a model's quality and validity
-  - train / test split and cross validation
-    - class imbalance -> stratified shuffle split
-  - performance measure
-- build model
-  - rationale for initial hyperparameters
-  - hyperparameter tuning
-- model description
-  - final set of hyperparameters
-- assess model
-  - evaluation criteria / lift and gain tables
-  - test result
-  - interpreation of performance on unseen data
-  - interpretaion in business terms
-  - analyze potential deployment of each result
+- Model assessment
+  - Distribution of predicted probabilities for each risk rating
+    - <img src="../data/image/2023-08-24-20-54-32.png"  width="1000">
+  - Evaluation metric / lift and gain tables
+    - We were able to achieve a multipartite AUC of 0.98 on the test set
+      - with almost perfect classification for low vs medium risk customers and for medium vs high risk customers
+    - <img src="../data/image/2023-08-24-20-55-34.png"  width="1000">
+  - Lift and gain charts
+    - Within the 1st decile, our model achieved 
+      - 2.7x lift in ranking low vs medium risk customers,
+      - 10.0x lift in ranking low vs high risk customers, and
+      - 5.2x lift in ranking medium vs high risk customers
+    - <img src="../data/image/2023-08-26-12-39-22.png"  width="1000">
+    - <img src="../data/image/2023-08-24-20-57-47.png"  width="1000">
+    - <img src="../data/image/2023-08-24-20-57-54.png"  width="1000">
+    - <img src="../data/image/2023-08-24-20-57-59.png"  width="1000">
+  
   - insights in why a certain model / certain hyperparameter lead to good / bad results
 
 # 5) Evaluation
 - Results = Models + Findings
+- Now we have seen the model is useful. What kind of insights can the model provide?
+- Interpretation of performance on unseen data
+  - Feature importance and permutation importance
+    - While feature importance is readily available for tree-based models, it favors features with high cardinality and may neglect important categorical features
+    - Furthermore, feature importance measures indicates the relative importance of each feature during model training but it does not indicate how much the model's performance in unseen data would suffer if the feature was removed
+    - To address this issue, we also computed permutation importance for each feature on the test set
+    - PEP_FL was the 5th most important feature by permutation importance but was not even in the top 10 by feature importance
+    - <img src="../data/image/2023-08-24-21-07-56.png"  width="1000">
+  - SHAP values
+    - SHAP values provide a more granular view of feature importance by showing how much each feature contributes to each prediction
+    - <img src="../data/image/2023-08-26-12-40-16.png"  width="1000">
+    - <img src="../data/image/2023-08-24-22-03-40.png"  width="1000">
+  - Partial dependence plots
+    - Partial dependence plots show how the average prediction changes when a feature is varied
+    - Low risk
+      - <img src="../data/image/2023-08-24-22-07-02.png"  width="1000">
+    - Medium risk
+      - <img src="../data/image/2023-08-24-22-07-20.png"  width="1000">
+    - High risk
+      - <img src="../data/image/2023-08-24-22-07-32.png"  width="1000">
+- Interpretation of important features in business terms
+  - The plots of WIRES_AVG_OUT, CASH_AVG_OUT, WIRES_AVG_IN and CASH_AVG_IN by risk rating confirms our hypothesis that high-risk customers tend to have an average transaction amount that is higher than low-risk customers but yet not so high as to be conspicuous
+  - The plot of WIRES_BALANCE also confirms our hypothesis that high-risk customers tend to withdraw funds immediately after receiving them
+  - <img src="../data/image/2023-08-26-12-39-56.png"  width="1000">
+  - <img src="../data/image/2023-08-24-21-14-56.png"  width="1000">
+- Prescriptive analytics = How to use the model
+  - Where to pick the cutoff
+    - <img src="../data/image/2023-08-24-22-08-11.png"  width="1000">
+  - Asymmetric misclassification cost matrix
+    - <img src="../data/image/2023-08-26-12-40-44.png"  width="1000">
+    - <img src="../data/image/2023-08-24-22-09-29.png"  width="1000">
+  - Optimized cutoff threshold 
+    - <img src="../data/image/2023-08-24-22-10-12.png"  width="1000">
 - findings that are important in
   - meeting business objectives
   - leading to new questions
@@ -183,3 +284,13 @@
 - list possible actions
   - with reasons for / against each option
   - rank each possible action
+- More resources
+  - https://fintrac-canafe.canada.ca/guidance-directives/guidance-directives-eng
+  - https://towardsdatascience.com/how-to-perform-ordinal-regression-classification-in-pytorch-361a2a095a99
+  - https://towardsai.net/p/l/from-classification-to-ordinal-regression
+  - from coarse-grained to fine-grained https://www.nature.com/articles/s41598-020-79007-5#Abs1
+  - Thermometer scaling (aka label extension)
+  - (2007, Cheng) [A Neural Network Approach to Ordinal Regression](https://arxiv.org/pdf/0704.1028.pdf)
+  - CORAL framework for rank consistency
+    - (2020, Cao, Mirjalili, Raschka) [Rank consistent ordinal regression for neural networks with application to age estimation](https://arxiv.org/pdf/1901.07884.pdf)
+    - label extension + weight sharing at penultimate layer
