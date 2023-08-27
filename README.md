@@ -23,7 +23,7 @@
 - Data = 1 million synthetic customer names (synthetic) and OpenSanctions watchlist
 - Ask = identify 50 bad actors in customer database using public watchlist
   - NLP technique that can be flexible enough to handle minor discrepancies in spelling, efficient enough to process a significant volume of matches, and comprehensive enough to consider additional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations)
-- More details for our code implementation and discussion
+- More details about our code implementation and discussion
   - [Task 1 README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task1)
 
 ## Task 2A and 2B
@@ -34,7 +34,7 @@
   - Task 2B: find 50 bad actors from a pool of 1 million customers based on their likelihood of engaging in money-laundering activities.
     - Binary classification with highly imbalanced data (50 bad actors / 1,000,000 customers = 0.005%)
     - Anomaly detection
-- More details for our code implementation and discussion
+- More details about our code implementation and discussion
   - [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
   - [Task 2B README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2B)
 
@@ -44,7 +44,7 @@
   - Extract new features
   - Fit graph models directly
   - Visualize interesting networks
-- More details for our code implementation and discussion
+- More details about our code implementation and discussion
   - [Task 3 README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3)
 
 # 3 stages of money laundering 
