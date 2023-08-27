@@ -1,9 +1,12 @@
 # Detect money laundering using criminal networks
 1st place ([announcement](https://www.linkedin.com/feed/update/urn:li:activity:7045542079829086208/) and [presentation slides](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf)), 2022-23 IMI BIGDataAIHUB Case Competition 
 - The [competition](https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-competition) sponsored by Scotiabank was held from November 2022 to March 2023, and was open to graduate students (masters, PhD) and undergrads with big data/AI experience from any academic discipline at University of Toronto
+- Contributors:
+  - Anny Huang
+  - Juandiego Morzán Samamé
+  - William Kwok 
 
-<img src="data/image/2023-08-27-15-29-27.png"  width="1000">
-<img src="data/image/2023-08-27-15-24-10.png"  width="1000">
+[<img src="data/image/2023-08-27-15-29-27.png"  width="700">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf) <img src="data/image/2023-08-27-15-24-10.png"  width="300">
 
 # Problem statement
 - __Ideally__, 
@@ -56,8 +59,3 @@ Money laundering refers to the act of “turning the proceeds of crime into cash
 ## Stage 3: Integration
 - The final stage integrates the illicit proceeds, that now appear to be clean funds, into the economy as "normal" personal or business transactions. By this stage is hard to distinguish between legal and illegal money, and the criminals can now use these funds without suspicion.
 - Integration can be detected by knowing the client and monitor for odd and unusual transactions.
-
-# Contributors
-- Anny Huang
-- Juandiego Morzán Samamé
-- William Kwok 
