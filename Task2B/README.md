@@ -5,7 +5,7 @@
 <img src="../data/image/2023-08-27-14-43-21.png"  width="1000">
 
 # 1) Business background
-- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/README.md#L28)
+- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/tree/main#task-2a-and-2b)
 - Analytical problem
   - Binary classification with highly imbalanced data (50 bad actors / 1,000,000 customers = 0.005%)
 - Data available

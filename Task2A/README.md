@@ -6,7 +6,7 @@
 <img src="../data/image/task2A-image-2.png"  width="1000">
 <img src="../data/image/task2A-image-3.png"  width="1000">
 # 1) Business background
-- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/README.md#L28)
+- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/tree/main#task-2a-and-2b)
 - Analytical problem = <ins>Ordinal classification</ins>
   - Classify customers into Low, Medium and High risk
   - nominal

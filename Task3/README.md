@@ -1,10 +1,20 @@
 # Highlights
 - 
 # Overview
-![Alt text](image.png)
+
 
 # 1) Business background
-- Problem statement
+- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/tree/main#task-3)
+- Analytical problem
+  - Improve Task 2 models by using client connections to either:
+    - Extract new features
+    - Fit graph models directly
+    - Visualize interesting networks
+- Data available
+  - Scotiabank synthetic data: UofT_nodes.csv (KYC, Transactional data and Risk Rating)
+  - 
+- Use case
+  - Once we have identified the bad actors, we should consider punitive actions such as closing their accounts and reporting them to the authorities.
 - Use Case
   - Suspicious clients will not be onboarded, or if they are already onboarded, their accounts will be frozen
 

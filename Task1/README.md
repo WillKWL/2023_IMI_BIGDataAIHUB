@@ -1,47 +1,44 @@
-# Highlights
-- Expedited large-scale fuzzy name matching by computing cosine similarity of vector space model in CSR sparse matrix format to detect bad actors among 430 billion combinations
-- Made reference to Monetary Authority of Singapore's [2022 AML name screening practices](https://www.mas.gov.sg/-/media/MAS-Media-Library/publications/monographs-or-information-paper/IMD/2022/Strengthening-AML-CFT-Name-Screening-Practices.pdf)
-
 # Overview
 <img src="../data/image/task1-image-8.png"  width="1000">
 
 # 1) Business background
-- Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/README.md#L20)
+- See [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/tree/main#task-1) for problem statement 
 - Analytical problem
   - NLP fuzzy matching algorithm that can continuously monitor client names with most updated watchlists
 - Data sources
-  - UofT_nodes.csv (Scotiabank list of 1 million synthetic customer names)
-  - [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/) (430 thousand sanctioned persons)
-- Use Case: Suspicious clients will not be allowed to open an account, or if they already did, their accounts will be frozen
-- Success criteria
-  - Qualitative assessment of the 50 bad actor matches
-- <img src="../data/image/2023-08-26-12-37-11.png"  width="1000">
+  - 1 million synthetic customer names from UofT_nodes.csv
+  - 430 thousand sanctioned persons from [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/) 
+- Challenging aspect
+  - Need for speed: a total of 430 billion combinations between 1 million customer names and 430 thousand sanctioned persons to check
+  - Need for fuzzy matching: exact name matching cannot capture variations of the same name
+  - Can only rely on qualitative assessment of the matches as there is no ground truth to evaluate the quality of the matches
+  - <img src="../data/image/2023-08-26-12-37-11.png"  width="1000">
  
 # 2) Data Understanding
-- Attributes: 
-  - Source of dataset (datasets)
+- Attributes from UofT_nodes.csv and OpenSanctions watchlist: 
   - Unique identifier (id)
   - Name (caption / name / alias / weakAlias / previousName)
-  - BirthDate
+  - Date of birth ("BirthDate")
   - Gender
   - Country / nationality
 - Data quality issues
-  - Possible variations of the same name:
-    - Spelling mistake
-    - Random abbreviation
+  - Possible variations of the same name exist due to
+    - Spelling mistake (e.g. Mayr instead of Mary)
+    - Random abbreviation (e.g. M. instead of Marie)
     - Nicknames and alias
     - Shuffling of first, middle and last name due to different conventions
     - Phonetic error due to inconsistent translation from other languages
-  - Conclusion
-    - There is a need for fuzzy name matching logic as exact name matching cannot capture these variations of the same name
+  - Solution = fuzzy name matching algorithm 
+    - Exact name matching cannot capture these variations of the same name
 
 # 3) Data preparation
-- Data cleaning to address data quality issues
+- Text processing to address data quality issues
   - Remove all non-english characters, e.g. Иван
   - Remove all punctuation and spaces between characters: no assumption in delimiter being space or underscore or hyphen
   - Make all letters lowercase
 - Final output
-  - yoU!ng ma? Rie mil#Dren col@EmAn -> youngmariemildrencoleman
+  - Convert each name into a continuous string of characters, which is then converted into a list of 3-grams
+  - <img src="../data/image/2023-08-27-20-38-31.png"  width="1000">
 
 # 4) Modeling
 - List of appropriate modelling techniques
@@ -51,33 +48,38 @@
     - Levenshtein distance / Jaro-Winkler distance / Cosine similarity / Jaccard similarity
   - Phonetic algorithms
     - Soundex / Metaphone / Double Metaphone
-- Constraints in runtime
-  - Checking all combinations is computationally infeasible
-    - A total of 430 billion combinations between 1 million customer names and 430 thousand sanctioned persons 
+  - Word embedding
+    - But we don't really need to capture the semantic meaning of the words for the purpose of matching names
+- Constraints
+  - Checking one combination at a time is computationally infeasible
+    - If checking a pair of names takes 1 millisecond (i.e. 0.001 second), checking a total of 430 billion combinations between 1 million customer names and 430 thousand sanctioned persons would take roughly 14 years
   - Checking all combinations is inefficient
-    - Most pairs have low similarity scores and can be ignored
-- Chosen model
-  - Bag of words + binary occurrence
-    - Very short texts (e.g. names) are likely to have noisy tf–idf values while binary occurrence values are more stable
+    - Most pairs of names are vastly different and should be dismissed quickly
+- Chosen approach
+  - Bag of words
+    - Quick to compute as a vector space model
+  - Binary occurrence (instead of tf-idf)
+    - Very short texts (e.g. names) tend to have noisy tf–idf values while binary occurrence values are more stable
   - 3-gram
     - Flexibility to handle minor discrepancies in spelling and ordering of words
-- Similarity measure
+- Measure of similarity between two names
   - Cosine similarity computed using CSR sparse matrix format
-    - Simple matrix multiplication is efficient to compute
-    - CSR sparse matrix format allows defining a threshold to filter out pairs with low similarity scores ([reference](https://www.sun-analytics.nl/posts/2017-07-26-boosting-selection-of-most-similar-entities-in-large-scale-datasets/))
+    - Simple matrix multiplication is quick to compute
+    - CSR sparse matrix format allows efficient top-n multiplication based on SciPy sparse matrix dot function and NumPy argpartition function ([more details](https://www.sun-analytics.nl/posts/2017-07-26-boosting-selection-of-most-similar-entities-in-large-scale-datasets/))
 - Procedure to test a model's quality and validity
-  - Name to match = 'Young Marie Mildren'
-  - Draw intuition from contrastive learning to manually define a set of examples containing
-    - Positive examples: Possible variations of the same name (e.g.     'Young MarieMildren', 'Young M Mildren', 'Young, Maarrie Mildren', 'Young, Mildren', 'Young, aMrei Mildren', 'Marie Mildren Young', 'Yung Mary Mildren' etc.)
-    - Negative examples: Names that are not the same person (e.g. Arei mr Remi.)
+  - Given there is no ground truth, we have to resort to qualitative assessment of the matches
+  - Define a name to match = 'Young Marie Mildren'
+  - Draw ideas from contrastive learning to manually define a set of examples containing
+    - Positive examples that include possible variations of the same name (e.g.     'Young MarieMildren', 'Young M Mildren', 'Young, Maarrie Mildren', 'Young, Mildren', 'Young, aMrei Mildren', 'Marie Mildren Young', 'Yung Mary Mildren' etc.)
+    - Negative examples that include names that do not represent the same person (e.g. Arei mr Remi.)
   - A good fuzzy matching algorithm should be able to assign a high similarity score to these variations
   - <img src="../data/image/task1-image-1.png"  width="1000">
-- Final matching algorithm
-  - Other considerations beyond just the name itself
-    - Date of birth
-    - Country
-    - Politically exposed person affiliations
-  - Similarity is calculated as (1 - abs(difference)) / max(abs(difference))
+- Other considerations beyond just the name itself
+  - Date of birth
+  - Country
+  - Politically exposed person affiliations
+  - Similarity is calculated as ${(1 - abs(difference))} \over {max(abs(difference)})$
+    - e.g. converting the difference in date of birth to a similarity score
   - Prioritize results with 
     - Exact match in name
     - Difference in date of birth <= 2 years
@@ -87,28 +89,27 @@
   - Remove multiple matches for the same customer (i.e. only keep the one with the highest similarity score)
 
 # 5) Evaluation
-- Output = list of bad actors
+- Output = a list of 50 customers that are most similar to the sanctioned persons in the watchlist
   - <img src="../data/image/task1-image-3.png"  width="1000">
-- Issues with current solution
-  - Heuristic-driven choice of bag-of-words with 3-gram as our choice of vector space model
-  - Heuristic-driven decision to combine similarity measures across name, date of birth and other personal information into an average similarity score is not optimal
-  - There is no ground truth to evaluate the quality of the matches
-    - We can only rely on qualitative assessment of the matches
+- What is good about the current approach
+  - It is quick to compute and seems to return reasonable matches based on qualitative assessment
+- What is not good about the current approach
+  - Since there is no ground truth, 
+    - We adopted a heuristic-driven choice of bag-of-words + binary occurrence + 3-gram
+    - We made a heuristic-driven decision to combine cosine similarity with similarity in name, date of birth and other personal information into an average similarity score is not optimal
   - Deployment option is not considered
     - Continuous monitoring of new customer names against updated watchlists is required
-  - More manual exclusion
-    - Titles
-    - Legal entity status
-    - Common words e.g. Sr/Jr / II / III
-  - Did not utilize existing [pairs data](https://www.opensanctions.org/docs/pairs/) from OpenSanctions
-    - The data has two entities on each line, and a judgement that states if the two records refer to the same logical item (positive) or if they are different logical items (negative)
+  - Additional resources to incorporate
+    - There can be rules to manually exclude certain characters in a name (such as titles, legal entity status, Sr/Jr / II / III)
+    - Existing [pairs data from OpenSanctions](https://www.opensanctions.org/docs/pairs/)
+      - The data has two entities on each line, and a judgement that states if the two records refer to the same logical item (positive) or if they are different logical items (negative)
 - Possible next steps
-  - Scheduled deployment to check against updated watchlists
-  - If given the ground truth, a more robust matching algorithm (e.g. denoising autoencoder) can be trained to find the best matches
+  - Schedule deployment to check against updated watchlists
+  - Apply contrastive learning with a larger set of positive and negative examples to generalize the fuzzy matching algorithm
 
 # References
-Monetary Authority of Singapore AML Name Screening Practices 2022
-https://www.mas.gov.sg/-/media/MAS-Media-Library/publications/monographs-or-information-paper/IMD/2022/Strengthening-AML-CFT-Name-Screening-Practices.pdf
+Domain knowledge
+- Monetary Authority of Singapore [AML Name Screening Practices 2022](https://www.mas.gov.sg/-/media/MAS-Media-Library/publications/monographs-or-information-paper/IMD/2022/Strengthening-AML-CFT-Name-Screening-Practices.pdf)
 
 Current approach in fuzzy name matching
 - https://pypi.org/project/sparse-dot-topn/
