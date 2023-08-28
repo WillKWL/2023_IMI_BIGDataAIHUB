@@ -73,7 +73,7 @@
     - Positive examples that include possible variations of the same name (e.g.     'Young MarieMildren', 'Young M Mildren', 'Young, Maarrie Mildren', 'Young, Mildren', 'Young, aMrei Mildren', 'Marie Mildren Young', 'Yung Mary Mildren' etc.)
     - Negative examples that include names that do not represent the same person (e.g. Arei mr Remi.)
   - A good fuzzy matching algorithm should be able to assign a high similarity score to these variations
-  - <img src="../data/image/task1-image-1.png"  width="1000">
+  - <img src="../data/image/2023-08-27-21-24-32.png"  width="1000">
 - Other considerations beyond just the name itself
   - Date of birth
   - Country
