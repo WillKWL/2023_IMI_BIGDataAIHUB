@@ -6,7 +6,7 @@
   - Juandiego Morzán Samamé
   - William Kwok 
 
-[<img src="data/image/2023-08-27-15-29-27.png"  width="700">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf) <img src="data/image/2023-08-27-15-24-10.png"  width="300">
+[<img src="data/image/2023-08-27-15-29-27.png"  width="300">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf) <img src="data/image/2023-08-27-15-24-10.png"  width="200">
 
 # Problem statement
 - __Ideally__, 
