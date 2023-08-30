@@ -1,5 +1,5 @@
 # Detect money laundering using criminal networks
-1st place ([announcement](https://www.linkedin.com/feed/update/urn:li:activity:7045542079829086208/) and [presentation slides](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf)), 2022-23 IMI BIGDataAIHUB Case Competition 
+1st place ([announcement](https://www.linkedin.com/feed/update/urn:li:activity:7045542079829086208/) and [presentation PDF](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf)), 2022-23 IMI BIGDataAIHUB Case Competition 
 - The [competition](https://www.utm.utoronto.ca/bigdataaihub/events/2022-23-imi-bigdataaihub-case-competition) sponsored by Scotiabank was held from November 2022 to March 2023, and was open to graduate students (masters, PhD) and undergrads with big data/AI experience from any academic discipline at University of Toronto
 - Contributors:
   - Anny Huang
