@@ -145,17 +145,39 @@
 ## 4) Modeling
 
 - Problem formulation: <ins>Ordinal Regression</ins> (aka Ordinal Classification in some papers)
+  - Target variable ("risk rating") is an example of ordinal data based on the four levels of measurement (nominal, ordinal, interval and ratio)
+  - We want a model to rank the three classes (low, medium and high risk) in the correct order
+- Modeling approach for ordinal regression = Ordinal Binary Decomposition
+  - One of the many approaches to solve ordinal regression
   - Main paper we referred to: [(2015) Ordinal Regression Methods: Survey and Experimental Study](https://ieeexplore.ieee.org/abstract/document/7161338)
-    - Ordinal binary decomposition
-      - One of the many approaches to solve ordinal regression
-  - Benefits:
+  - Benefits of ordinal binary decomposition:
     - "It is important to note that naïve approaches and ordinal binary decompositions can be applied using almost any base binary classifier or regressor."
     - Our testing showed that ordinal binary decomposition offered significant improvement in test performance over the multi-class classification especially for linear models (e.g. multinomial logistic regression)
       - Shortcoming of multi-class classification: straightforward but 0-1 misclassification matrix ignores ranking of the labels
     - AML regulators prefer linear models with a high degree of model interpretability and transparency
     - Binary classifiers are well-studied and many algorithms are readily available
+
+### Evaluation metric = <ins>Multipartite AUC</ins>
+
+- Implemented as MultipartiteAUC (quote the source code line here)
+  - The score ranges from 0 to 1
+    - The model producing the perfect ranking has a score of 1, while random guessing has a score of 0.5
+  - Paper: (2009, Furnkranz, Hullermeier, Vanderlooy) [Binary Decomposition Methods for Multipartite Ranking](https://link.springer.com/content/pdf/10.1007/978-3-642-04180-8_41.pdf)
+  - = Macro-weighted to address class imbalance
+  - = OneVsOne Macro AUC but with the flexibility to calculate a weighted average
+    - Also see sklearn implementation of [average_multiclass_ovo_score](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/_base.py)
+- How it works: a model with a high multipartite AUC score can rank
+  - Medium risk customers above low risk customers &
+  - High risk customers above low risk customers &
+  - High risk customers above medium risk customers
+  - <img src="../data/image/task2A-image-4.png"  width="1000">
+
+- Other resources
+  - (2001, Hand and Till) [A Simple Generalization of the Area Under the ROC Curve for Multiple Class Classification Problems](https://link.springer.com/article/10.1023/A:1010920819831)
+  - (2009, Baccianella, Andrea Esuli and Fabrizio Sebastiani) [Evaluation Measures for Ordinal Regression](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5364825)
+  - (2022) [Class distance weighted cross-entropy loss](https://arxiv.org/pdf/2202.05167.pdf)
   
-### 1st part: Nominal Decompositions
+### 4A) Nominal Decompositions
 
 - Different ways to decompose an ordinal regression problem into binary subproblems:
   - Ordered partition
@@ -164,51 +186,46 @@
   - OneVsPrevious decomposition
   - <img src="../data/image/2023-08-30-20-56-18.png"  width="1000">
 
-### 2nd part: Combining subproblems into ordinal regression model
+### 4B) Combining subproblems back into one model
 
-- Option 1: multiple model approach (i.e. one model for each subproblem)
-  - One of the many methods is $K-1$ binary classification and we implemented the methodology as a wrapper for sklearn classifier
+- We have two options to combine the binary subproblems into an ordinal regression model
+- __Option 1:__ multiple model approach (i.e. one model for each subproblem)
+  - One of the many methods is Frank and Hall's approach of $K-1$ binary classification and we implemented the methodology as a wrapper for sklearn classifier
     - <img src="../data/image/2023-08-30-21-03-48.png"  width="1000">
     - Paper: [(2001, Frank and Hall) A simple approach to ordinal classification](https://www.cs.waikato.ac.nz/~eibe/pubs/ordinal_tech_report.pdf)
-    - A $K$-class ordinal problem can be converted into $K-1$ binary class problems
+    - How it works: a $K$-class ordinal problem can be converted into $K-1$ binary class problems
     - Potential issue: rank inconsistency
       - e.g. the outputs from K-1 binary class problems are [0.91, 0.91, 0.49, 0.72, 0.11]. Iterating from left to right would result in a prediction label of 2 (since 0.49 < 0.5), even though the right answer might just as well be 4 (since 0.72 > 0.5)
       - We decided to ignore for now as we want to see the testing performance first
-- Option 2: multiple-output single model approach (i.e. one model for all subproblems)
+- __Option 2:__ multiple-output single model approach (i.e. one model for all subproblems)
   - One of the many methods is extended binary classification and we implemented as a wrapper for sklearn classifier
     - <img src="../data/image/2023-08-30-21-08-58.png"  width="1000">
     - Paper: 
       - [(2007, Li and Lin) Ordinal Regression by Extended Binary Classification](https://papers.nips.cc/paper/2006/file/019f8b946a256d9357eadc5ace2c8678-Paper.pdf)
       - [(2007 Cardoso, Costa) Learning to Classify Ordinal Data: The Data Replication Method](https://www.jmlr.org/papers/volume8/cardoso07a/cardoso07a.pdf)
+    - How it works: by replicating the data to add an extra input dimension, we can use one model to solve two problems at the same time 
+      - <img src="../data/image/2023-09-04-14-10-09.png"  width="1000">
     - Potential issue: lack of flexibility for high-dimensional data
       - While it is an elegant solution to solve 2 binary subproblems at once by just increasing the number of dimension by 1 and drawing the decision boundary with 1 binary classifier, the approach might not be flexible enough for less separable data
-# stop here
-- Final approach: OneVsFollowers decomposition (i.e. decomposing into Low vs Medium, High and Medium vs High) + Binary classifier
-    - Result suggests significant improvement over baseline (i.e. multi-class nominal classification)
-    - <img src="../data/image/2023-08-23-22-20-25.png"  width="1000">
-- Evaluation metric = <ins>Multipartite AUC</ins>
-  - Implemented as MultipartiteAUC (quote the source code line here)
-  - Paper: (2009, Furnkranz, Hullermeier, Vanderlooy) [Binary Decomposition Methods for Multipartite Ranking](https://link.springer.com/content/pdf/10.1007/978-3-642-04180-8_41.pdf)
-  - Intuition: a model with a high multipartite AUC score can rank
-    - Medium risk customers above low risk customers &
-    - High risk customers above low risk customers &
-    - High risk customers above medium risk customers
-    - <img src="../data/image/task2A-image-4.png"  width="1000">
-  - Macro-weighted to address class imbalance
-  - Essentially OneVsOne Macro AUC but with the flexibility to calculate a weighted average
-    - Also see sklearn implementation of [average_multiclass_ovo_score](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/_base.py)
-  - Other resources
-    - (2001, Hand and Till) [A Simple Generalization of the Area Under the ROC Curve for Multiple Class Classification Problems](https://link.springer.com/article/10.1023/A:1010920819831)
-    - (2009, Baccianella, Andrea Esuli and Fabrizio Sebastiani) [Evaluation Measures for Ordinal Regression](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5364825)
-    - (2022) [Class distance weighted cross-entropy loss](https://arxiv.org/pdf/2202.05167.pdf)
 
-- Consider a list of appropriate modeling techniques
-  - logistic regression
+### 4A) + 4B) = OneVsFollowers + Frank and Hall
+
+- Evaluate combinations based on 10-fold cross validation multipartite AUC score
+- Final approach = OneVsFollowers decomposition + Frank and Hall's K-1 approach
+  - From 4A), we chose OneVsFollowers decomposition (i.e. decomposing into Low vs Medium, High and Medium vs High)
+  - From 4B), we chose Frank and Hall's K-1 approach (i.e. multiple model approach)
+- Result suggests significant improvement over baseline (i.e. multi-class nominal classification)
+  - <img src="../data/image/2023-08-23-22-20-25.png"  width="1000">
+
+### Model building
+
+- Consider a list of binary classifiers to be used in Frank and Hall wrapper
+  - Logistic regression
   - Gaussian naive Bayes
-  - decision tree
-  - extra trees
-  - histogram-based gradient boosting
-  - bagging classifier
+  - Decision tree
+  - Extra trees
+  - Histogram-based gradient boosting
+  - Bagging classifier
   - AdaBoost
   - LightGBM
 - Procedure to test a model's quality and validity
@@ -217,33 +234,37 @@
     - 5-fold cross validation
   - Evaluation metric = multipartite AUC
 - Rationale for hyperparameter tuning
-  - Shortlisted LightGBM and histogram-based gradient boosting based on 5-fold cross validation score
+  - Shortlisted LightGBM and histogram-based gradient boosting based on 5-fold cross validation score using default hyperparameters
     - <img src="../data/image/2023-08-23-22-34-50.png"  width="1000">
-  - Not much hyperparameter tuning is needed as the default parameters already perform well
-    - Tune learning rate and number of estimators for both LightGBM and histogram-based gradient boosting to improve generalization performance
-- Final model
-  - LightGBM as the best model after hyperparameter tuning with RandomizedSearchCV
+  - Not much hyperparameter tuning is needed as the default hyperparameters already produced good performance
+    - Just tune learning rate and number of estimators for both LightGBM and histogram-based gradient boosting to improve generalization performance
+    - Tune with RandomizedSearchCV
+- Best model after hyperparameter tuning
+  - LightGBM as the best model based on 5-fold cv score
     - <img src="../data/image/2023-08-23-22-38-22.png"  width="1000">
-- assumptions for chosen model
-- Model assessment
-  - Distribution of predicted probabilities for each risk rating
-    - <img src="../data/image/2023-08-24-20-54-32.png"  width="1000">
-  - Evaluation metric / lift and gain tables
-    - We were able to achieve a multipartite AUC of 0.98 on the test set
-      - with almost perfect classification for low vs medium risk customers and for medium vs high risk customers
-    - <img src="../data/image/2023-08-24-20-55-34.png"  width="1000">
-  - Lift and gain charts
-    - Within the 1st decile, our model achieved
-      - 2.7x lift in ranking low vs medium risk customers,
-      - 10.0x lift in ranking low vs high risk customers, and
-      - 5.2x lift in ranking medium vs high risk customers
-    - <img src="../data/image/2023-08-26-12-39-22.png"  width="1000">
-    - <img src="../data/image/2023-08-24-20-57-47.png"  width="1000">
-    - <img src="../data/image/2023-08-24-20-57-54.png"  width="1000">
-    - <img src="../data/image/2023-08-24-20-57-59.png"  width="1000">
-  
-  - insights in why a certain model / certain hyperparameter lead to good / bad results
 
+### Model assessment
+
+- Distribution of predicted probabilities for each risk rating
+  - <img src="../data/image/2023-08-24-20-54-32.png"  width="1000">
+  - Distribution is not too skewed towards 0 or 1 even for high risk rating, suggesting that the model is not overfitting
+- Multipartite AUC score on test set = 0.98
+  - Model produces almost perfect classification for
+    - low vs medium risk customers (AUC = 1.00) and
+    - medium vs high risk customers (AUC = 1.00)
+  - Model suggests the difficult is in separating medium from high risk customers (AUC = 0.94)
+  - <img src="../data/image/2023-08-24-20-55-34.png"  width="1000">
+- Lift and gain charts
+  - Within the 1st decile, our model achieved
+    - $2.7\times$ lift in ranking low vs medium risk customers,
+      - Maximum possible lift in 1st decile = ${60\text{\% low risk} + 35\text{\% medium risk} \over 35\text{\% medium risk}} = 2.7\times$
+    - $10.0\times$ lift in ranking low vs high risk customers, and
+      - Maximum possible lift in 1st decile = ${60\text{\% low risk} + 5\text{\% high risk} \over 5\text{\% high risk}} = 13.0\times$
+    - $5.2\times$ lift in ranking medium vs high risk customers
+      - Maximum possible lift in 1st decile = ${35\text{\% medium risk} + 5\text{\% high risk} \over 5\text{\% high risk}} = 8.0\times$
+  - <img src="../data/image/2023-08-26-12-39-22.png"  width="1000">
+
+## stop here
 ## 5) Evaluation
 
 - Results = Models + Findings
