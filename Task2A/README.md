@@ -243,7 +243,7 @@
   - LightGBM as the best model based on 5-fold cv score
     - <img src="../data/image/2023-08-23-22-38-22.png"  width="1000">
 
-### Model assessment
+## 5) Evaluation
 
 - Distribution of predicted probabilities for each risk rating
   - <img src="../data/image/2023-08-24-20-54-32.png"  width="1000">
@@ -264,58 +264,58 @@
       - Maximum possible lift in 1st decile = ${35\text{\% medium risk} + 5\text{\% high risk} \over 5\text{\% high risk}} = 8.0\times$
   - <img src="../data/image/2023-08-26-12-39-22.png"  width="1000">
 
-## stop here
-## 5) Evaluation
+## 6) Findings
 
-- Results = Models + Findings
-- Now we have seen the model is useful. What kind of insights can the model provide?
-- Interpretation of performance on unseen data
-  - Feature importance and permutation importance
-    - While feature importance is readily available for tree-based models, it favors features with high cardinality and may neglect important categorical features
-    - Furthermore, feature importance measures indicates the relative importance of each feature during model training but it does not indicate how much the model's performance in unseen data would suffer if the feature was removed
-    - To address this issue, we also computed permutation importance for each feature on the test set
-    - PEP_FL was the 5th most important feature by permutation importance but was not even in the top 10 by feature importance
-    - <img src="../data/image/2023-08-24-21-07-56.png"  width="1000">
-  - SHAP values
-    - SHAP values provide a more granular view of feature importance by showing how much each feature contributes to each prediction
-    - <img src="../data/image/2023-08-26-12-40-16.png"  width="1000">
-    - <img src="../data/image/2023-08-24-22-03-40.png"  width="1000">
-  - Partial dependence plots
-    - Partial dependence plots show how the average prediction changes when a feature is varied
-    - Low risk
-      - <img src="../data/image/2023-08-24-22-07-02.png"  width="1000">
-    - Medium risk
-      - <img src="../data/image/2023-08-24-22-07-20.png"  width="1000">
-    - High risk
-      - <img src="../data/image/2023-08-24-22-07-32.png"  width="1000">
-- Interpretation of important features in business terms
-  - The plots of WIRES_AVG_OUT, CASH_AVG_OUT, WIRES_AVG_IN and CASH_AVG_IN by risk rating confirms our hypothesis that high-risk customers tend to have an average transaction amount that is higher than low-risk customers but yet not so high as to be conspicuous
-  - The plot of WIRES_BALANCE also confirms our hypothesis that high-risk customers tend to withdraw funds immediately after receiving them
-  - <img src="../data/image/2023-08-26-12-39-56.png"  width="1000">
-  - <img src="../data/image/2023-08-24-21-14-56.png"  width="1000">
-- Prescriptive analytics = How to use the model
-  - Where to pick the cutoff
-    - <img src="../data/image/2023-08-24-22-08-11.png"  width="1000">
-  - Asymmetric misclassification cost matrix
-    - <img src="../data/image/2023-08-26-12-40-44.png"  width="1000">
-    - <img src="../data/image/2023-08-24-22-09-29.png"  width="1000">
-  - Optimized cutoff threshold
-    - <img src="../data/image/2023-08-24-22-10-12.png"  width="1000">
-- findings that are important in
-  - meeting business objectives
-  - leading to new questions
-  - recommendations for new data mining projects
-- review process
-  - for each stage, ask
-    - was it necessary
-    - was it executed optimally
-    - in what ways can it be improved
-  - identify failures
-  - identify misleading steps
-  - identify possible alternative actions and / or unexpected paths in the process
-- list possible actions
-  - with reasons for / against each option
-  - rank each possible action
+Now we have seen the model is useful. What kind of insights can the model provide? How can we use the model?
+
+### Permutation importance
+
+Interpretation of important features in business terms
+
+- WIRES_BALANCE (i.e. the balance of wire transfers for a customer in the last 12 months)
+  - This feature is the most important feature in the model by permutation importance
+  - EDA shows that high-risk customers tend to have an account balance that is neither too high nor too low, confirming our hypothesis that high-risk customers tend to "transfer on an in and out basis"
+- WIRES_AVG_OUT, CASH_AVG_OUT, WIRES_AVG_IN and CASH_AVG_IN (i.e. average inbound and outbound transfers for a customer in the last 12 months)
+  - This set of features are the next most important features in the model by permutation importance
+  - EDA shows that high-risk customers tend to transfer money in an amount that is neither too high nor too low, confirming our hypothesis that high-risk customers tend to "structure amounts to avoid identification or reporting thresholds"
+- <img src="../data/image/2023-08-26-12-39-56.png"  width="1000">
+- Feature importance VS permutation importance
+  - While feature importance is readily available for tree-based models, it favors features with high cardinality and may neglect important categorical features
+  - Furthermore, feature importance measures indicates the relative importance of each feature during model training but it does not indicate how much the model's performance in unseen data would suffer if the feature was removed
+  - To address this issue, we also computed permutation importance for each feature on the test set
+
+### SHAP values and Partial Dependence Plots (PDPs)
+
+- While feature importance and feature importance give you a single score to indicate how important a feature is to a model's performance, SHAP values complemented with partial dependence plots provide a more granular visual display of how much each feature contributes to the model's prediction for each data point
+- Y-axis of PDPs represents expected predicted probability of customer being high risk given the value of the feature on the X-axis
+- <img src="../data/image/2023-08-26-12-40-16.png"  width="1000">
+
+### Prescriptive analytics
+
+(i.e. How to use the model?)
+
+- Precision-Recall curves to show the tradeoff between precision and recall when deciding a probability cutoff threshold
+  - <img src="../data/image/2023-08-24-22-08-11.png"  width="1000">
+- For this task, it is reasonable to assume an asymmetric misclassification cost matrix
+  - We designed the lower triangle of the cost matrix to be 2x the upper triangle
+  - i.e. the cost of misclassifying a high-risk customer as low risk (100%) is 2 times higher than the cost of misclassifying a low-risk customer as high risk (50%)
+  - Based on the above assumption, we can choose a cutoff threshold that minimizes misclassification cost (at the level of the entire customer base, or at the level of an individual customer)
+    - In our case, we can achieve 37% of misclassification cost compared to the baseline scenario (i.e. maximum precision in classify high-risk customers)
+  - <img src="../data/image/2023-08-26-12-40-44.png"  width="1000">
+
+## 7) Next steps
+
+- Recommendations for new projects
+  - Use transaction records instead of summary statistics as input data
+  - Incorporate model constraints from regulation
+  - Compare our approach with what chatGPT Code Interpreter suggests (especially in EDA)
+- Lessons learnt
+  - Domain knowledge from FINTRAC is important
+  - Read papers to understand the pros and cons of different modeling approaches and why a certain approach is developed
+- What can be done better
+  - Combine data preparation pipeline with the modeling pipeline such that even the hyperparameters in data preparation pipeline can be tuned
+    - Caching the fitted transformers using [the memory argument in sklearn pipeline](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
+  - Perform feature selection or agglomeration to reduce the number of correlated features as this can bias permutation importance and other inference methods
 - More resources
   - <https://fintrac-canafe.canada.ca/guidance-directives/guidance-directives-eng>
   - <https://towardsdatascience.com/how-to-perform-ordinal-regression-classification-in-pytorch-361a2a095a99>
