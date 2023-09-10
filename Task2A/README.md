@@ -17,7 +17,8 @@
 - Available data
   - Synthetic KYC and transactional data (UofT_nodes.csv)
   - Target variable = risk rating
-- Use Case: Instead of resorting to a binary decision to deny a customer access to banking services, we can leverage the customer's risk score to allow access to a certain extent. For instance,
+- Use Case
+  - Instead of resorting to a binary decision to deny a customer access to banking services, we can leverage the customer's risk score to allow access to a certain extent. For instance,
   - How long to freeze the customer's account?
   - How much monitoring to apply to the customer's activities?
   - What types of activity to provide access to the customer?
@@ -99,7 +100,7 @@
 ## 3) Data preparation
 
 - Data cleaning
-  - Fix data type
+  - Fix data types
     - As datetime
       - BIRTH_DT, CUST_ADD_DT
     - From int to str
@@ -108,7 +109,7 @@
       - OCPTN_NM, PEP_FL, RES_CNTRY_CA, CNTRY_OF_INCOME_CA, GENDER
     - As ordered category
       - COUNTRY_RISK_INCOME, COUNTRY_RISK_RESIDENCY, RISK
-  - Impute missing values
+  - Treat missing values
     - Flag missingness if missingness might be a deliberate effort to avoid detection
       - Add dummy variable to indicate missing name
       - Add dummy variable to indicate data entry error (CNT = 0 but SUM != 0)
@@ -200,10 +201,10 @@
 - __Option 2:__ multiple-output single model approach (i.e. one model for all subproblems)
   - One of the many methods is extended binary classification and we implemented as a wrapper for sklearn classifier
     - <img src="../data/image/2023-08-30-21-08-58.png"  width="1000">
-    - Paper: 
+    - Paper:
       - [(2007, Li and Lin) Ordinal Regression by Extended Binary Classification](https://papers.nips.cc/paper/2006/file/019f8b946a256d9357eadc5ace2c8678-Paper.pdf)
       - [(2007 Cardoso, Costa) Learning to Classify Ordinal Data: The Data Replication Method](https://www.jmlr.org/papers/volume8/cardoso07a/cardoso07a.pdf)
-    - How it works: by replicating the data to add an extra input dimension, we can use one model to solve two problems at the same time 
+    - How it works: by replicating the data to add an extra input dimension, we can use one model to solve two problems at the same time
       - <img src="../data/image/2023-09-04-14-10-09.png"  width="1000">
     - Potential issue: lack of flexibility for high-dimensional data
       - While it is an elegant solution to solve 2 binary subproblems at once by just increasing the number of dimension by 1 and drawing the decision boundary with 1 binary classifier, the approach might not be flexible enough for less separable data
@@ -228,17 +229,17 @@
   - Bagging classifier
   - AdaBoost
   - LightGBM
-- Procedure to test a model's quality and validity
+- Define procedure to test a model's quality and validity
   - Stratified shuffle split for both train-test split and cross-validation in hyperparameter tuning due to class imbalance
     - 80-20 train-test split
     - 5-fold cross validation
   - Evaluation metric = multipartite AUC
-- Rationale for hyperparameter tuning
-  - Shortlisted LightGBM and histogram-based gradient boosting based on 5-fold cross validation score using default hyperparameters
-    - <img src="../data/image/2023-08-23-22-34-50.png"  width="1000">
+- Shortlisted LightGBM and histogram-based gradient boosting based on 5-fold cross validation score using default hyperparameters
+  - <img src="../data/image/2023-08-23-22-34-50.png"  width="1000">
+- Rationale for hyperparameter tuning  
   - Not much hyperparameter tuning is needed as the default hyperparameters already produced good performance
-    - Just tune learning rate and number of estimators for both LightGBM and histogram-based gradient boosting to improve generalization performance
-    - Tune with RandomizedSearchCV
+  - Just tune learning rate and number of estimators for both LightGBM and histogram-based gradient boosting to improve generalization performance
+  - Tune with RandomizedSearchCV
 - Best model after hyperparameter tuning
   - LightGBM as the best model based on 5-fold cv score
     - <img src="../data/image/2023-08-23-22-38-22.png"  width="1000">

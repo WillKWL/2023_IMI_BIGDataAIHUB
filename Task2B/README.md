@@ -1,57 +1,51 @@
-# Highlights
-- 
 # Overview
+
 <img src="../data/image/2023-08-27-14-43-04.png"  width="1000">
 <img src="../data/image/2023-08-27-14-43-21.png"  width="1000">
 
-# 1) Business background
+## 1) Business background
+
 - Problem statement see [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/tree/main#task-2a-and-2b)
 - Analytical problem
-  - Binary classification with highly imbalanced data (50 bad actors / 1,000,000 customers = 0.005%)
-- Data available
+  - Binary classification with highly imbalanced data (50 bad actors / 1,000,000 customers = 0.005%), or outlier detection
+- Available data
   - Scotiabank synthetic data: UofT_nodes.csv (KYC, Transactional data and Risk Rating)
 - Use case
-  - Once we have identified the bad actors, we should consider punitive actions such as closing their accounts and reporting them to the authorities.
+  - Once we have identified the bad actors, we should consider punitive actions such as closing their accounts and reporting them to the authorities
 
- 
-# 2) Data Understanding
-- See Task 2A README
-- Class imbalance
+## 2) Data Understanding
+
+- See more details about exploratory data analysis from [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
+  - Volumetric analysis
+  - Hypothesis based on domain knowledge
+  - Data exploration
+  - Data quality assessment
+- Target variable = label of bad actors from [Task 1](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task1)
+  - Huge class imbalance
   - 50 bad actors / 1,000,000 customers = 0.005%
   - <img src="../data/image/2023-08-27-09-54-40.png"  width="300">
-- volumetric analysis
-  - history of the data
-  - quantity of data available (number of rows and what columns are there)
-- attribute types and values
-  - check attribute types
-  - check attribute value ranges
-  - meaning of each attribute in business terms
-  - basic statistics of each attribute (distribution, average, min, max, sd, mode, skewness etc.)
-  - attributes (which ones are relevant / irrelevant)
-  - industry domain knowledge
-  - data imbalance?
-- data exploration
-  - hypothesis
-- data quality
-  - coverage (if all possible values are represented)
-  - missing values
-  - plausibility of values
 
-# 3) Data preparation
-- data cleaning report
-  - decisions and actions taken to address data quality problems
-- derived attributes
-  - domain knowledge
-  - constraints in modeling approach (e.g. heteroscedasticity)
-  - impute missing values
-- single-attribute transformation
+## 3) Data preparation
 
-# 4) Modeling
-- Evaluation metric
-  - Average precision = area under precision-recall curve
-    - Preferable to AUROC for highly imbalanced data
-    - [sklearn documentation](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score)
-- consider a list of appropriate modeling techniques
+- See more details about pipeline to prepare data from [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
+  - Fix data types
+  - Treat missing values
+  - Derived attributes based on domain knowledge
+  - Single-attribute transformation
+
+## 4) Modeling
+
+- Analytical problem = <ins>binary classification</ins> or outlier detection
+- Evaluation metric = <ins>Average Precision</ins>
+  - i.e. Area under precision-recall curve ([sklearn documentation](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score))
+  - Preferable to AUROC for highly imbalanced data
+    - Precision = $\frac{TP}{TP+FP}$, Recall = $\frac{TP}{TP+FN}$, Specificity = $\frac{TN}{TN+FP}$
+    - Average precision considers both precision and recall, while AUROC considers both recall and specificity
+    - For highly imbalanced data, a high number of True Negatives produced by a poor model can inflate AUROC
+
+### Shortlist promising models
+
+- Consider a list of appropriate modeling techniques
   - Isolation forest
   - Logistic regression
   - Gaussian Naive Bayes
@@ -62,89 +56,71 @@
   - Bagging classifier
   - XGBoost classifier
   - LightGBM classifier
-  - <img src="../data/image/2023-08-27-11-23-05.png"  width="1000">
-- constraints for no deep learning (interpretability, computation time, knowledge)
-- assumptions for chosen model
-- define procedure to test a model's quality and validity
+- Define procedure to test a model's quality and validity
   - Stratified shuffle split for both train-test split and cross validation to address class imbalance
-    - 60-40 train-test split (30 bad actors in train set and 20 bad actors in test set)
-    - 3-fold cross validation (10 bad actors in each fold)
-- build model
-  - Grid search to determine possible range of hyperparameters to avoid overfitting on the 50 bad actors
-    - LightGBM's range of hyperparameters
-      - max_bin: 150 to 300
-      - num_leaves: 20 to 40
-      - min_data_in_leaf: 10 to 30
-      - bagging_fraction: 0.1 to 1.0
-      - feature_fraction: 0.1 to 1.0
+    - 60-40 train-test split to have 30 bad actors in train set and 20 bad actors in test set
+    - 3-fold cross validation to have 10 bad actors in each fold
+- Shorlisted LightGBM, XGBoost and Logistic regression for hyperparameter tuning
+  - <img src="../data/image/2023-08-27-11-23-05.png"  width="1000">
+
+### Hyperparameter tuning
+
+- Rationale for hyperparameter tuning  
+  - First, determine the possible range of hyperparameters and their associated distributions with Grid Search to avoid overfitting on the 30 bad actors in the training set
+    - LightGBM
+      - max_bin: 150 to 300 (uniform)
+      - num_leaves: 20 to 40 (uniform)
+      - min_data_in_leaf: 10 to 30 (uniform)
+      - bagging_fraction: 0.1 to 1.0 (uniform)
+      - feature_fraction: 0.1 to 1.0 (uniform)
       - lambda_l1: 0.01 to 100 (log-uniform)
       - lambda_l2: 0.01 to 100 (log-uniform)
       - min_split_gain: 0.0001 to 0.01 (log-uniform)
-      - max_depth: 15 to 30
+      - max_depth: 15 to 30 (uniform)
       - extra_trees: True
-    - XGBoost's range of hyperparameters 
-      - max_depth: 2 to 10
-      - n_estimators: 50 to 150
-      - max_bin: 100 to 1000
+    - XGBoost
+      - max_depth: 2 to 10 (uniform)
+      - n_estimators: 50 to 150 (uniform)
+      - max_bin: 100 to 1000 (uniform)
       - min_child_weight: 0.1 to 10 (log-uniform)
-      - subsample: 0.2 to 1.0
-      - colsamples_bytree: 0.2 to 1.0
-      - colsamples_bylevel: 0.2 to 1.0
-      - colsamples_bynode: 0.2 to 1.0
-    - Logistic regression's range of hyperparameters
+      - subsample: 0.2 to 1.0 (uniform)
+      - colsamples_bytree: 0.2 to 1.0 (uniform)
+      - colsamples_bylevel: 0.2 to 1.0 (uniform)
+      - colsamples_bynode: 0.2 to 1.0 (uniform)
+    - Logistic regression
       - alpha: 0.0001 to 0.1 (log-uniform)
-- Bayesian optimization from skopt to tune hyperparameters
-  - Average precision
-    - <img src="../data/image/2023-08-27-11-25-01.png"  width="1000">
-  - AUROC
-    - <img src="../data/image/2023-08-27-11-45-28.png"  width="1000">
-- model description
-  - final set of hyperparameters
+- Next, find optimal hyperparameters using [Bayesian optimization from skopt](https://scikit-optimize.github.io/stable/modules/generated/skopt.BayesSearchCV.html)
+  - 3-fold CV average precision and AUROC (for reporting purpose only) after hyperparameter tuning
+  - <img src="../data/image/2023-08-27-11-25-01.png"  width="1000">
+  - <img src="../data/image/2023-08-27-11-45-28.png"  width="1000">
+- Best model after hyperparameter tuning
+  - Balance class weights to address class imbalance
   - <img src="../data/image/2023-08-27-11-52-07.png"  width="1000">
-- assess model
-  - Average precision 
-    - Despite thorough hyperparameter tuning, the model still cannot perform as well in the test set as in cross-validation
-    - <img src="../data/image/2023-08-27-12-00-03.png"  width="1000">
-  - AUROC
-    - <img src="../data/image/2023-08-27-12-11-18.png"  width="300">
-  - Lift and gain chart
-    - 6.5x lift for 1st decile
-    - <img src="../data/image/2023-08-27-12-10-09.png"  width="1000">
-  - Distribution of predicted probabilities
-    - <img src="../data/image/2023-08-27-11-53-46.png"  width="1000">
-  - Precision-recall curve
-    - <img src="../data/image/2023-08-27-12-12-16.png"  width="1000">
-  - test result
-  - interpretation of performance on unseen data
-  - interpretation in business terms
-  - analyze potential deployment of each result
-    - Optimized cutoff threshold based on misclassification cost
-      - <img src="../data/image/2023-08-27-12-13-16.png"  width="1000">
-  - insights in why a certain model / certain hyperparameter lead to good / bad results
 
-# 5) Evaluation
-- Results = Models + Findings
-- Overall, performance is not good and model is prone to overfit on the handful of bad actors in the training set
-  - Solution: Task 3 [link]
-- Feature importance and permutation importance
-  - <img src="../data/image/2023-08-27-12-13-39.png"  width="1000">
-- EDA of important features
-  - <img src="../data/image/2023-08-27-12-13-53.png"  width="1000">
-- SHAP values
-  - <img src="../data/image/2023-08-27-12-14-18.png"  width="1000">
-- Partial dependence plots
-- findings that are important in
-  - meeting business objectives
-  - leading to new questions
-  - recommendations for new data mining projects
-- review process
-  - for each stage, ask
-    - was it necessary
-    - was it executed optimally
-    - in what ways can it be improved
-  - identify failures
-  - identify misleading steps
-  - identify possible alternative actions and / or unexpected paths in the process
-- list possible actions
-  - with reasons for / against each option
-  - rank each possible action
+## 5) Evaluation
+
+- Distribution of predicted probabilities
+  - Distribution is quite skewed towards 0 due to class imbalance, suggesting potential overfitting
+  - <img src="../data/image/2023-08-27-11-53-46.png" width="1000">
+- Average precision on test set = 0.0018
+  - While the model performs 37x better than baseline (random guess = 50 / 1,000,000 = 0.00005),
+  - it still seems to have overfitted as it cannot perform as well in the test set as in cross-validation
+  - <img src="../data/image/2023-08-27-12-00-03.png"  width="1000">
+  - Precision-recall curve
+    - Due to huge class imbalance, the model's precision is very low even if the cutoff is chosen at high expected probability
+    - <img src="../data/image/2023-08-27-12-12-16.png"  width="1000">
+- Lift and gain charts
+  - Our model achieved 6.5x lift within the 1st decile
+  - Quite low compared to maximum possible lift in 1st decile = ${999950\text{ normal customers} + 50\text{ bad actors} \over 50\text{ bad actors}} = 20000\times$
+  - <img src="../data/image/2023-08-27-12-10-09.png"  width="1000">
+- AUROC on test set = 0.8983
+  - <img src="../data/image/2023-08-27-12-11-18.png"  width="300">
+  - As mentioned earlier, while AUROC is high, it is misleading for highly imbalanced data
+
+### Improvements to made
+
+- While the model performs better than random guess, its lift in the 1st decile is still quite low
+- Possible improvements
+  - More experimentation with sampling techniques to address class imbalance
+    - Likely require caching to reduce training time
+  - More data to train the model (see [Task 3](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3))
