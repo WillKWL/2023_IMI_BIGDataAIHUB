@@ -39,13 +39,14 @@
 
 - Text processing to address data quality issues
   - Remove non-english characters, e.g. Иван
-  - Remove punctuation and spaces between characters as we did not make an assumption about delimiter being space or underscore or hyphen
-  - Change characters to lowercase
+  - Remove punctuation and spaces between characters as we can assume delimiter has to be a space or underscore or hyphen
+  - Use only lowercase characters
 - Final output
   - Each name becomes a continuous string of characters, which is then converted into a list of 3-gram tokens
   - <img src="../data/image/2023-08-27-20-38-31.png"  width="1000">
 
 ## 4) Modeling
+
 
 - List of appropriate modeling techniques
   - Vector space model
@@ -60,10 +61,10 @@
   - Checking one combination at a time is infeasible
     - If checking a pair of names takes 1 millisecond (i.e. 0.001 second), checking a total of 430 billion combinations between 1 million customer names and 430 thousand sanctioned persons would take roughly 14 years
   - Checking all combinations is inefficient
-    - Most pairs of names are vastly different and should be dismissed quickly as two different people
+    - Most pairs of names are vastly different and should be dismissed quickly as a false match
 - Final approach to address the constraints and challenges in modeling
   1) Bag of words
-     - Quick to compute as a vector space model
+     - Quick to compute as a vector space model to represent a name as a real-valued vector
   2) Binary occurrence (instead of TF-IDF)
      - Very short texts (e.g. names) tend to have noisy TF-IDF values while binary occurrence values are more stable
   3) Tokenization with 3-gram
@@ -72,7 +73,6 @@
      - Simple matrix multiplication is quick to compute
   5) CSR sparse matrix format
      - Efficient top-n multiplication based on SciPy sparse matrix dot function and NumPy argpartition function ([more details](https://www.sun-analytics.nl/posts/2017-07-26-boosting-selection-of-most-similar-entities-in-large-scale-datasets/))
-
 - Procedure to test our approach's quality and validity
   - Given there is no ground truth, we had to resort to qualitative assessment of the matches
   - Define a name to match = 'Young Marie Mildren'
@@ -80,7 +80,7 @@
     - Positive examples that include possible variations of the same name (e.g.     'Young MarieMildren', 'Young M Mildren', 'Young, Maarrie Mildren', 'Young, Mildren', 'Young, aMrei Mildren', 'Marie Mildren Young', 'Yung Mary Mildren' etc.)
     - Negative examples that include names that do not represent the same person (e.g. Arei mr Remi.)
   - A good fuzzy matching algorithm should be able to assign a high similarity score to positive examples and a low similarity score to negative examples (as illustrated below)
-    - <img src="../data/image/2023-08-27-21-24-32.png"  width="1000">
+    - ![2023-08-27-21-24-32](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/a7a05b9c-110c-4c5d-8901-765872d24eed)
 - Other considerations to identify the same person beyond matching just the name
   - Similarity of the following attributes is calculated as ${(1 - abs(difference))} \over {max(abs(difference)})$ (e.g. by converting the difference in date of birth to a similarity score between 0 and 1)
     - Date of birth
@@ -100,7 +100,7 @@
   - <img src="../data/image/task1-image-3.png"  width="1000">
 - What is good about the current approach
   - It is quick to compute and seems to return reasonable matches based on qualitative assessment
-- What is not good about the current approach
+- What is bad about the current approach
   - Since there is no ground truth,
     - We adopted a heuristic-driven choice of modeling approach using bag-of-words, binary occurrence, 3-gram tokenization and cosine similarity
     - We made a heuristic-driven decision to calculate an "average similarity score" across multiple attributes, including name, date of birth and other personal information
