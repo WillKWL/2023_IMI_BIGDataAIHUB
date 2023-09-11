@@ -1,6 +1,6 @@
 # Overview
 
-<img src="../data/image/2023-08-27-14-43-04.png"  width="500"> <img src="../data/image/2023-08-27-14-43-21.png"  width="500">
+[<img src="../data/image/2023-08-27-14-43-04.png"  width="500">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf) [<img src="../data/image/2023-08-27-14-43-21.png"  width="500">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf)
 
 ## 1) Business background
 
