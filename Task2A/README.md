@@ -11,13 +11,17 @@
   - Why ordinal?
     - 4 levels of measurement = nominal, ordinal, interval and ratio
     - Nominal: order doesn't matter
-    - Ordinal: order matters but difference is not in fixed interval
-    - Interval: order matters + fixed interval
-    - Ratio: order matters + fixed interval + only positive values
+    - Ordinal: order matters but difference between measurement is not in fixed interval
+    - Interval: order matters with fixed interval between measurement
+    - Ratio: Interval + only positive values
+  - Target variable belongs to ordinal data
 - Available data
   - Synthetic KYC and transactional data (UofT_nodes.csv)
   - Target variable = risk rating
-- Use Case
+- Challenges in this task
+  - We need a model that performs neither classification nor regression but ranking
+  - We need a metric that can evaluate our model's performance in ranking
+- Use case
   - Instead of resorting to a binary decision to deny a customer access to banking services, we can leverage the customer's risk score to allow access to a certain extent. For instance,
   - How long to freeze the customer's account?
   - How much monitoring to apply to the customer's activities?
@@ -59,7 +63,6 @@
     - WIRES_CNT_IN (int): count of wire in-transfer LTM
     - WIRES_SUM_OUT (float): sum of wire out-transfer LTM
     - WIRES_CNT_OUT (int): count of wire out-transfer LTM
-  
 - Hypothesis with Money Laundering [indicators involving transactions](<https://fintrac-canafe.canada.ca/guidance-directives/transaction-operation/indicators-indicateurs/fin_mltf-eng>)
   - Client frequents multiple locations utilizing cash, prepaid credit cards or money orders/cheques/drafts to send wire transfers overseas.
     - High count of transactions
@@ -69,24 +72,22 @@
     - The sum of inflows is similar to the sum of outflows
   - Client sending to, or receiving wire transfers from, multiple clients.
     - High count of transactions
-- Data exploration
-  - Univariate analysis
-    - Skewness and varying scales in numerical variables
-      - <img src="../data/image/2023-08-21-21-02-07.png"  width="1000">
-    - Numerous categorical variables have a majority class >= 90%
-      - <img src="../data/image/2023-08-21-21-02-50.png"  width="1000">
-  - Bivariate analysis
-    - High correlation between numerical variables could impact inference
-      - <img src="../data/image/2023-08-21-21-09-13.png"  width="1000">
-    - High conditional entropy between categorical variables could impact inference
-      - <img src="../data/image/2023-08-21-21-09-59.png"  width="1000">
-  - Distribution of feature by target variable
-    - High degree of overlapping between the three classes without any transformation performed on numerical variables
-      - Over-/Under-sampling or adjusting class weights won't be effective
-      - <img src="../data/image/2023-08-21-21-13-16.png"  width="1000">
-      - <img src="../data/image/2023-08-21-21-15-26.png"  width="1000">
-  - Some categorical variables (e.g. PEP_FL and occupation_risk) seem to provide a strong signal to separate the low risk rating from the other two classes
-    - <img src="../data/image/2023-08-21-21-23-05.png"  width="1000">
+### Data exploration
+- Univariate analysis
+  - Skewness and varying scales in numerical variables
+    - <img src="../data/image/2023-08-21-21-02-07.png"  width="1000">
+  - Numerous categorical variables have a majority class >= 90%
+    - <img src="../data/image/2023-08-21-21-02-50.png"  width="1000">
+- Bivariate analysis
+  - High correlation between numerical variables and high conditional entropy between categorical variables could impact inference
+    - <img src="../data/image/2023-08-21-21-09-13.png"  width="500"> <img src="../data/image/2023-08-21-21-09-59.png"  width="500">
+- Distribution of feature by target variable
+  - High degree of overlapping between the three classes without any transformation performed on numerical variables
+    - Over-/Under-sampling or adjusting class weights won't be effective
+    - <img src="../data/image/2023-08-21-21-13-16.png"  width="1000">
+    - <img src="../data/image/2023-08-21-21-15-26.png"  width="1000">
+- Some categorical variables (e.g. PEP_FL and occupation_risk) seem to provide a strong signal to separate the low risk rating from the other two classes
+  - <img src="../data/image/2023-08-21-21-23-05.png"  width="1000">
 - Class imbalance in target variable
   - <img src="../data/image/2023-08-21-20-34-22.png"  width="300">
 - Data quality
@@ -153,18 +154,18 @@
   - Main paper we referred to: [(2015) Ordinal Regression Methods: Survey and Experimental Study](https://ieeexplore.ieee.org/abstract/document/7161338)
   - Benefits of ordinal binary decomposition:
     - "It is important to note that naïve approaches and ordinal binary decompositions can be applied using almost any base binary classifier or regressor."
-    - Our testing showed that ordinal binary decomposition offered significant improvement in test performance over the multi-class classification especially for linear models (e.g. multinomial logistic regression)
+    - We showed that ordinal binary decomposition offered significant improvement in test performance over the multi-class classification especially for linear models (e.g. multinomial logistic regression)
       - Shortcoming of multi-class classification: straightforward but 0-1 misclassification matrix ignores ranking of the labels
     - AML regulators prefer linear models with a high degree of model interpretability and transparency
     - Binary classifiers are well-studied and many algorithms are readily available
 
 ### Evaluation metric = <ins>Multipartite AUC</ins>
 
-- Implemented as MultipartiteAUC (quote the source code line here)
+- Implemented as MultipartiteAUC(y_true, y_score, average = 'macro')
   - The score ranges from 0 to 1
     - The model producing the perfect ranking has a score of 1, while random guessing has a score of 0.5
   - Paper: (2009, Furnkranz, Hullermeier, Vanderlooy) [Binary Decomposition Methods for Multipartite Ranking](https://link.springer.com/content/pdf/10.1007/978-3-642-04180-8_41.pdf)
-  - = Macro-weighted to address class imbalance
+  - Macro-weighted to address class imbalance
   - = OneVsOne Macro AUC but with the flexibility to calculate a weighted average
     - Also see sklearn implementation of [average_multiclass_ovo_score](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/_base.py)
 - How it works: a model with a high multipartite AUC score can rank
@@ -182,7 +183,6 @@
 
 - Different ways to decompose an ordinal regression problem into binary subproblems:
   - Ordered partition
-  - OneVsNext decomposition
   - OneVsFollowers decomposition
   - OneVsPrevious decomposition
   - <img src="../data/image/2023-08-30-20-56-18.png"  width="1000">
@@ -192,7 +192,7 @@
 - We have two options to combine the binary subproblems into an ordinal regression model
 - __Option 1:__ multiple model approach (i.e. one model for each subproblem)
   - One of the many methods is Frank and Hall's approach of $K-1$ binary classification and we implemented the methodology as a wrapper for sklearn classifier
-    - <img src="../data/image/2023-08-30-21-03-48.png"  width="1000">
+    - ![2023-08-30-21-03-48](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/ef1ab641-a2dc-4cda-ab12-e83aae62c00f)
     - Paper: [(2001, Frank and Hall) A simple approach to ordinal classification](https://www.cs.waikato.ac.nz/~eibe/pubs/ordinal_tech_report.pdf)
     - How it works: a $K$-class ordinal problem can be converted into $K-1$ binary class problems
     - Potential issue: rank inconsistency
@@ -200,20 +200,21 @@
       - We decided to ignore for now as we want to see the testing performance first
 - __Option 2:__ multiple-output single model approach (i.e. one model for all subproblems)
   - One of the many methods is extended binary classification and we implemented as a wrapper for sklearn classifier
-    - <img src="../data/image/2023-08-30-21-08-58.png"  width="1000">
+    - ![2023-08-30-21-08-58](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/1ef2a1b8-d575-4cf4-8e6d-2209ab47fbed)
     - Paper:
       - [(2007, Li and Lin) Ordinal Regression by Extended Binary Classification](https://papers.nips.cc/paper/2006/file/019f8b946a256d9357eadc5ace2c8678-Paper.pdf)
       - [(2007 Cardoso, Costa) Learning to Classify Ordinal Data: The Data Replication Method](https://www.jmlr.org/papers/volume8/cardoso07a/cardoso07a.pdf)
-    - How it works: by replicating the data to add an extra input dimension, we can use one model to solve two problems at the same time
-      - <img src="../data/image/2023-09-04-14-10-09.png"  width="1000">
+    - How it works: by concatenating a copy of the original dataset with itself to add extra input dimension(s), we can use one model to solve multiple binary problems at the same time
+      - ![2023-09-04-14-10-09](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/827ab649-0039-41ff-8d61-55e02b6f1a8d)
     - Potential issue: lack of flexibility for high-dimensional data
       - While it is an elegant solution to solve 2 binary subproblems at once by just increasing the number of dimension by 1 and drawing the decision boundary with 1 binary classifier, the approach might not be flexible enough for less separable data
 
 ### 4A) + 4B) = OneVsFollowers + Frank and Hall
 
-- Evaluate combinations based on 10-fold cross validation multipartite AUC score
+- 3 options from 4A) x 2 options from 4B) gave us 6 options to compare against the baseline (multi-class classification)
+- We evaluated these combinations based on 10-fold cross validation multipartite AUC score
 - Final approach = OneVsFollowers decomposition + Frank and Hall's K-1 approach
-  - From 4A), we chose OneVsFollowers decomposition (i.e. decomposing into Low vs Medium, High and Medium vs High)
+  - From 4A), we chose OneVsFollowers decomposition (i.e. decomposing ordinal problem into 2 binary problems: Low vs Medium, High and Medium vs High)
   - From 4B), we chose Frank and Hall's K-1 approach (i.e. multiple model approach)
 - Result suggests significant improvement over baseline (i.e. multi-class nominal classification)
   - <img src="../data/image/2023-08-23-22-20-25.png"  width="1000">
@@ -247,14 +248,14 @@
 ## 5) Evaluation
 
 - Distribution of predicted probabilities for each risk rating
-  - <img src="../data/image/2023-08-24-20-54-32.png"  width="1000">
+  - ![2023-08-24-20-54-32](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/6a9bf864-1bbf-4fe7-bdbd-364391765638)
   - Distribution is not too skewed towards 0 or 1 even for high risk rating, suggesting that the model is not overfitting
 - Multipartite AUC score on test set = 0.98
   - Model produces almost perfect classification for
     - low vs medium risk customers (AUC = 1.00) and
     - medium vs high risk customers (AUC = 1.00)
   - Model suggests the difficult is in separating medium from high risk customers (AUC = 0.94)
-  - <img src="../data/image/2023-08-24-20-55-34.png"  width="1000">
+  - ![2023-08-24-20-55-34](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/fdd35ca7-aa85-4b98-bf1a-5480ea390b5d)
 - Lift and gain charts
   - Within the 1st decile, our model achieved
     - $2.7\times$ lift in ranking low vs medium risk customers,
@@ -263,7 +264,7 @@
       - Maximum possible lift in 1st decile = ${60\text{\% low risk} + 5\text{\% high risk} \over 5\text{\% high risk}} = 13.0\times$
     - $5.2\times$ lift in ranking medium vs high risk customers
       - Maximum possible lift in 1st decile = ${35\text{\% medium risk} + 5\text{\% high risk} \over 5\text{\% high risk}} = 8.0\times$
-  - <img src="../data/image/2023-08-26-12-39-22.png"  width="1000">
+  - ![2023-08-26-12-39-22](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/af42a3df-f712-42dc-99ed-94f7e0e298d5)
 
 ## 6) Findings
 
@@ -288,7 +289,7 @@ Interpretation of important features in business terms
 ### SHAP values and Partial Dependence Plots (PDPs)
 
 - While feature importance and feature importance give you a single score to indicate how important a feature is to a model's performance, SHAP values complemented with partial dependence plots provide a more granular visual display of how much each feature contributes to the model's prediction for each data point
-- Y-axis of PDPs represents expected predicted probability of customer being high risk given the value of the feature on the X-axis
+- Y-axis of PDPs represents expected probability of customer being high risk given the value of the feature on the X-axis
 - <img src="../data/image/2023-08-26-12-40-16.png"  width="1000">
 
 ### Prescriptive analytics
@@ -299,24 +300,28 @@ Interpretation of important features in business terms
   - <img src="../data/image/2023-08-24-22-08-11.png"  width="1000">
 - For this task, it is reasonable to assume an asymmetric misclassification cost matrix
   - We designed the lower triangle of the cost matrix to be 2x the upper triangle
-  - i.e. the cost of misclassifying a high-risk customer as low risk (100%) is 2 times higher than the cost of misclassifying a low-risk customer as high risk (50%)
+    - i.e. the cost of misclassifying a high-risk customer as low risk (100%) is 2 times higher than the cost of misclassifying a low-risk customer as high risk (50%)
   - Based on the above assumption, we can choose a cutoff threshold that minimizes misclassification cost (at the level of the entire customer base, or at the level of an individual customer)
     - In our case, we can achieve 37% of misclassification cost compared to the baseline scenario (i.e. maximum precision in classify high-risk customers)
   - <img src="../data/image/2023-08-26-12-40-44.png"  width="1000">
 
 ## 7) Next steps
 
-- Recommendations for new projects
-  - Use transaction records instead of summary statistics as input data
-  - Incorporate model constraints from regulation
-  - Compare our approach with what chatGPT Code Interpreter suggests (especially in EDA)
-- Lessons learnt
-  - Domain knowledge from FINTRAC is important
-  - Read papers to understand the pros and cons of different modeling approaches and why a certain approach is developed
-- What can be done better
+- What is good about the current approach
+  - Only binary classifiers to solve ordinal problem
+  - Sklearn wrapper for ordinal regression to use just like any sklearn classifier
+  - A suitable scoring function for ordinal regression
+  - Optimize cutoff threshold using asymmetric misclassification matrix
+  - Utilized domain knowledge from FINTRAC to form hypothesis and derive additional features from the dataset
+  - Read papers about ordinal regression to understand the pros and cons of different modeling approaches and why a certain approach is developed
+- How can the current approach be improved
   - Combine data preparation pipeline with the modeling pipeline such that even the hyperparameters in data preparation pipeline can be tuned
     - Caching the fitted transformers using [the memory argument in sklearn pipeline](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
   - Perform feature selection or agglomeration to reduce the number of correlated features as this can bias permutation importance and other inference methods
+- Recommendations for new projects
+  - Use transaction records instead of summary statistics as input data
+  - Incorporate constraints about modeling approach given regulatory concern
+  - Compare our approach with what chatGPT Code Interpreter suggests (especially in EDA)
 - More resources
   - <https://fintrac-canafe.canada.ca/guidance-directives/guidance-directives-eng>
   - <https://towardsdatascience.com/how-to-perform-ordinal-regression-classification-in-pytorch-361a2a095a99>
