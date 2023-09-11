@@ -47,7 +47,7 @@
 
 ### Task 3
 
-- Data: same as Task 2 + directed payments between customers (graph)
+- Data = same as Task 2 + directed payments between customers (graph)
 - Ask = enhance task 2 models by using client connections to either:
   - Extract new features
   - Fit graph models directly
