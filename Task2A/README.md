@@ -1,7 +1,7 @@
 # Overview
 
-<img src="../data/image/task2A-image.png"  width="500"> <img src="../data/image/task2A-image-1.png"  width="500">
-<img src="../data/image/task2A-image-2.png"  width="500"> <img src="../data/image/task2A-image-3.png"  width="500">
+[<img src="../data/image/task2A-image.png"  width="500">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf) [<img src="../data/image/task2A-image-1.png"  width="500">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf)
+[<img src="../data/image/task2A-image-2.png"  width="500">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf) [<img src="../data/image/task2A-image-3.png"  width="500">](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/data/IMI_Team35_Slides_Final_v3.pdf)
 
 ## 1) Business background
 
