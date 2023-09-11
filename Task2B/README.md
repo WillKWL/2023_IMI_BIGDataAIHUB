@@ -1,7 +1,6 @@
 # Overview
 
-<img src="../data/image/2023-08-27-14-43-04.png"  width="1000">
-<img src="../data/image/2023-08-27-14-43-21.png"  width="1000">
+<img src="../data/image/2023-08-27-14-43-04.png"  width="500"> <img src="../data/image/2023-08-27-14-43-21.png"  width="500">
 
 ## 1) Business background
 
@@ -10,16 +9,15 @@
   - Binary classification with highly imbalanced data (50 bad actors / 1,000,000 customers = 0.005%), or outlier detection
 - Available data
   - Scotiabank synthetic data: UofT_nodes.csv (KYC, Transactional data and Risk Rating)
+- Challenges in modeling
+  - Model is prone to overfitting on the 50 bad actors
 - Use case
   - Once we have identified the bad actors, we should consider punitive actions such as closing their accounts and reporting them to the authorities
 
 ## 2) Data Understanding
 
 - See more details about exploratory data analysis from [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
-  - Volumetric analysis
-  - Hypothesis based on domain knowledge
-  - Data exploration
-  - Data quality assessment
+  - Volumetric analysis, hypothesis based on domain knowledge, data exploration, data quality assessment
 - Target variable = label of bad actors from [Task 1](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task1)
   - Huge class imbalance
   - 50 bad actors / 1,000,000 customers = 0.005%
@@ -101,26 +99,26 @@
 
 - Distribution of predicted probabilities
   - Distribution is quite skewed towards 0 due to class imbalance, suggesting potential overfitting
-  - <img src="../data/image/2023-08-27-11-53-46.png" width="1000">
+  - ![2023-08-27-11-53-46](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/3961c7f5-6479-4087-bf80-3b4fc1d3a519)
 - Average precision on test set = 0.0018
   - While the model performs 37x better than baseline (random guess = 50 / 1,000,000 = 0.00005),
   - it still seems to have overfitted as it cannot perform as well in the test set as in cross-validation
-  - <img src="../data/image/2023-08-27-12-00-03.png"  width="1000">
+  - ![2023-08-27-12-00-03](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/2509ca8a-8efa-408c-92df-ed543284ba32)
   - Precision-recall curve
     - Due to huge class imbalance, the model's precision is very low even if the cutoff is chosen at high expected probability
-    - <img src="../data/image/2023-08-27-12-12-16.png"  width="1000">
+    - ![2023-08-27-12-12-16](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/e6a451b9-b7dc-4773-84c1-2526340ac508)
 - Lift and gain charts
   - Our model achieved 6.5x lift within the 1st decile
   - Quite low compared to maximum possible lift in 1st decile = ${999950\text{ normal customers} + 50\text{ bad actors} \over 50\text{ bad actors}} = 20000\times$
-  - <img src="../data/image/2023-08-27-12-10-09.png"  width="1000">
+  - ![2023-08-27-12-10-09](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/de94a45a-cfb7-4561-b729-aa4c20287bf6)
 - AUROC on test set = 0.8983
-  - <img src="../data/image/2023-08-27-12-11-18.png"  width="300">
+  - ![2023-08-27-12-11-18](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/assets/12086923/c358a460-f5e7-4c85-bb2c-d99773f5c056)
   - As mentioned earlier, while AUROC is high, it is misleading for highly imbalanced data
 
-### Improvements to made
+## 6) Improvements to make: [Task 3](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3)
 
 - While the model performs better than random guess, its lift in the 1st decile is still quite low
-- Possible improvements
+- Possible improvements for the current approach
+  - More data to train the model on (see [Task 3](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3))
   - More experimentation with sampling techniques to address class imbalance
     - Likely require caching to reduce training time
-  - More data to train the model (see [Task 3](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3))
