@@ -14,32 +14,33 @@
 ## Problem statement
 
 - __Ideally__,
-  - Financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by a high number of well-trained staff.
+  - Financial institutions can prevent money-laundering criminals from infiltrating the banking network by employing a manual Know-Your-Customer (KYC) and ongoing monitoring process conducted by a team of subject matter experts.
 - __In practice__,
-  - The sheer volume of new account registrations and the ever-growing number of payment transaction necessitate an automated and cost-efficient monitoring system to identify suspicious criminals who are constantly innovating ways to “legitimize” their funds through the financial system.
-  - While misclassifying a regular customer as a criminal may damage relationship with the customer, misclassifying a criminal as a regular customer is far worse with the potential to face substantial reputational damage and heavy regulatory fines.
+  - The sheer volume of new account registrations and the ever-growing number of payment transactions necessitate an automated and cost-efficient monitoring system to identify suspicious identities who are constantly innovating ways to “legitimize” their funds through the financial system.
+  - While misclassifying a normal customer as a high-risk customer may damage the customer relationship and missed opportunities, misclassifying a criminal as a normal customer is far worse, with the potential to face substantial reputational damage and heavy regulatory fines and let criminal activities go undetected.
 - __Consequences for ineffective Anti-Money Laundering (AML) practice:__
-  - For customers and the society, ineffective combat against money laundering can lead to financial exclusion for marginalized individuals, while failure to cut off terrorist activity financing can cause pervasive disruption in the financial system.
-  - For banks, it poses a substantial risk of undermining their reputation and overall performance.
+  - For the general public, ineffective combat against money laundering can lead to financial exclusion for marginalized individuals, while failure to cut off the money laundering that finances terrorism may lead to pervasive destruction in the society.
+  - For banks and other financial institutions, AML failures pose a substantial risk of undermining their reputation and overall performance.
 
 ## Modeling tasks
+There are three modeling tasks raised in this case competition.
 
 ### Task 1
 
-- Data = 1 million synthetic customer names and OpenSanctions public watchlist
-- Ask = identify 50 bad actors in customer database using public watchlist
+- Data = KYC of 1 million synthetic customers and OpenSanctions public watchlist
+- Ask = identify 50 bad actors in the customer database using the public watchlist
   - NLP technique that can be flexible enough to handle minor discrepancies in spelling, efficient enough to process a significant volume of matches, and comprehensive enough to consider additional personal information beyond just the name itself (e.g. date of birth and politically exposed person affiliations)
 - More details about our code implementation and discussion of our results
   - [Task 1 README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task1)
 
 ### Task 2A and 2B
 
-- Data = synthetic KYC and transaction data of 1 million customers
+- Data = KYC of 1 million synthetic customers and transaction data 
 - Ask =
-  - Task 2A: score customers as low, medium and high risk ratings based on their likelihood of engaging in money-laundering activities
+  - Task 2A: assign customers as low-, medium- or high-risk ratings based on their likelihood of engaging in money-laundering activities
     - Ordinal regression that can take into account the ranking information provided by the label, instead of multi-class classification
-  - Task 2B: find 50 bad actors from a pool of 1 million customers based on their likelihood of engaging in money-laundering activities
-    - Binary classification with highly imbalanced data (50 bad actors / 1,000,000 customers = 0.005%)
+  - Task 2B: identify 50 bad actors from a pool of 1 million customers based on their likelihood of engaging in money-laundering activities
+    - Binary classification with extremely imbalanced data (50 bad actors / 1,000,000 customers = 0.005%)
     - Anomaly detection
 - More details about our code implementation and discussion of our results
   - [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
@@ -47,10 +48,10 @@
 
 ### Task 3
 
-- Data = same as Task 2 + directed payments between customers (graph)
+- Data = same as Task 2 + directed payments between customers (graph data of nodes and links)
 - Ask = enhance task 2 models by using client connections to either:
   - Extract new features
-  - Fit graph models directly
+  - Develop graph models
   - Visualize interesting networks
 - More details about our code implementation and discussion of our results
   - [Task 3 README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3)
@@ -61,15 +62,15 @@ Money laundering refers to the act of “turning the proceeds of crime into cash
 
 ### Stage 1: Placement
 
-- Money laundering starts by placing funds derived from illegal activities into the financial system in the form of cash deposits, cheque, money transfers or any type of transaction where money enters the bank.
+- Money laundering starts by placing funds derived from illegal activities into the financial system in the form of cash deposits, cheques, money transfers, or any type of transaction where money enters the bank.
 - Placement can be identified at the frontline by understanding the source of the funds.
 
 ### Stage 2: Layering
 
-- Second stage is for a criminal to move funds around to hide their illegal origins. It may consist of multiple transactions without clear purpose to move money between products, clients, bank, corporations and geographies.
-- Layering can be detected by understanding transaction purpose and if it is unusual for the customer.
+The second stage is for a criminal to move funds around to hide their illegal origins. It may consist of multiple transactions without a clear purpose to move money between products, clients, banks, corporations, and geographies.
+- Layering can be detected by studying the purpose of the transaction and if it is abnormal for the customer.
 
 ### Stage 3: Integration
 
-- The final stage integrates the illicit proceeds, that now appear to be clean funds, into the economy as "normal" personal or business transactions. By this stage it is hard to distinguish between legal and illegal money, and the criminals can now use these funds without suspicion.
-- Integration can be detected by knowing the client and monitor for odd and unusual transactions.
+- The final stage integrates the illicit proceeds, which now appear to be clean funds, into the economy as "normal" personal or business transactions. By this stage it is hard to distinguish between legal and illegal money, and the criminals can now use these funds without suspicion.
+- Integration can be detected by accumulating knowledge of the customer and monitoring for suspicious transactions.
