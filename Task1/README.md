@@ -6,14 +6,14 @@
 
 - See [main README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/tree/main#task-1) for problem statement
 - Analytical problem
-  - NLP fuzzy matching algorithm that can continuously monitor client names with most updated watchlists
+  - NLP fuzzy matching algorithm that can continuously monitor client names with the most updated watchlists
 - Data sources
   - 1 million synthetic customer names from UofT_nodes.csv
   - 430 thousand sanctioned persons from [OpenSanctions watchlist](https://www.opensanctions.org/datasets/default/)
 - Challenges
   - __Need for speed:__ there was a total of 430 billion combinations between 1 million customer names and 430 thousand sanctioned persons to check
-  - __Need for fuzzy matching:__ exact name matching cannot capture variations of the same name
-  - __No ground truth:__ we could only rely on qualitative assessment of the matches as there is no ground truth to evaluate the quality of the matches
+  - __Need for fuzzy matching:__ exact name matching cannot capture subtle variations of the name of the same person
+  - __No ground truth:__ we could only rely on a qualitative assessment of the matches as there is no ground truth to evaluate the quality of the matches
 - Summary
   - <img src="../data/image/2023-08-26-12-37-11.png"  width="1000">
 
@@ -30,7 +30,7 @@
     - Spelling mistake (e.g. Mayr instead of Mary)
     - Abbreviation (e.g. M. instead of Marie)
     - Nickname and alias
-    - Shuffling of first, middle and last name due to different convention
+    - Shuffling of first, middle, and last name due to different convention
     - Phonetic error due to inconsistent spelling of phonetically identical names
   - Solution = fuzzy name matching algorithm
     - Exact name matching cannot capture these variations of the same name
@@ -38,8 +38,8 @@
 ## 3) Data preparation
 
 - Text processing to address data quality issues
-  - Remove non-english characters, e.g. Иван
-  - Remove punctuation and spaces between characters as we can assume delimiter has to be a space or underscore or hyphen
+  - Remove non-English characters, e.g. Иван
+  - Remove punctuation and spaces between characters as we can assume the delimiter has to be a space or underscore or hyphen
   - Use only lowercase characters
 - Final output
   - Each name becomes a continuous string of characters, which is then converted into a list of 3-gram tokens
@@ -58,7 +58,7 @@
   - Word embedding
     - However for the purpose of matching names, we don't need to capture the semantic meaning of the words
 - Constraints in choosing a modeling technique
-  - Checking one combination at a time is infeasible
+  - Checking one name at a time is infeasible
     - If checking a pair of names takes 1 millisecond (i.e. 0.001 second), checking a total of 430 billion combinations between 1 million customer names and 430 thousand sanctioned persons would take roughly 14 years
   - Checking all combinations is inefficient
     - Most pairs of names are vastly different and should be dismissed quickly as a false match
@@ -74,9 +74,9 @@
   5) CSR sparse matrix format
      - Efficient top-n multiplication based on SciPy sparse matrix dot function and NumPy argpartition function ([more details](https://www.sun-analytics.nl/posts/2017-07-26-boosting-selection-of-most-similar-entities-in-large-scale-datasets/))
 - Procedure to test our approach's quality and validity
-  - Given there is no ground truth, we had to resort to qualitative assessment of the matches
+  - Given there is no ground truth, we had to resort to a qualitative assessment of the matches
   - Define a name to match = 'Young Marie Mildren'
-  - Draw ideas from contrastive learning to manually define a set of examples containing
+  - Draw ideas from contrastive learning to manually define a set of examples containing:
     - Positive examples that include possible variations of the same name (e.g.     'Young MarieMildren', 'Young M Mildren', 'Young, Maarrie Mildren', 'Young, Mildren', 'Young, aMrei Mildren', 'Marie Mildren Young', 'Yung Mary Mildren' etc.)
     - Negative examples that include names that do not represent the same person (e.g. Arei mr Remi.)
   - A good fuzzy matching algorithm should be able to assign a high similarity score to positive examples and a low similarity score to negative examples (as illustrated below)
@@ -90,30 +90,30 @@
     - Exact match in name
     - Difference in date of birth <= 2 years
     - Length of name >= 3 to avoid just matching first and last name
-  - Only consider matches for customer with "RISK" attribute = high
+  - Only consider matches for customers with "RISK" attribute = high
   - Sort the list of matches by average similarity score
   - Remove multiple matches for the same customer (i.e. only keep the one with the highest similarity score)
 
 ## 5) Evaluation
 
-- Output = a list of 50 customers that are most similar to the sanctioned persons in the watchlist
+- Output = a list of 50 customer names that are most similar to the sanctioned persons in the watchlist
   - <img src="../data/image/task1-image-3.png"  width="1000">
-- What is good about the current approach
+- Pros of the current approach
   - It is quick to compute and seems to return reasonable matches based on qualitative assessment
-- What is bad about the current approach
+- Cons of the current approach
   - Since there is no ground truth,
     - We adopted a heuristic-driven choice of modeling approach using bag-of-words, binary occurrence, 3-gram tokenization and cosine similarity
-    - We made a heuristic-driven decision to calculate an "average similarity score" across multiple attributes, including name, date of birth and other personal information
+    - A heuristic-driven decision to calculate an "average similarity score" across multiple attributes, including name, date of birth and other personal information
   - CI/CD is not considered
-    - Continuous monitoring of new customer names against updated watchlists is needed for a production-ready solution to be used in onboarding process
-  - Additional information to incorporate
+    - Continuous monitoring of new customer names against updated watchlists is needed for a production-ready solution to be used in onboarding process, but not in the practical scope of this case competition
+  - Additional ideas suggested to be incorporated:
     - More refined text processing
-      - There can be rules to manually exclude certain characters in a name (such as titles, legal entity status, Sr/Jr / II / III)
+      - There can be pre-screening rules employed by the subject matter experts to exclude certain characters in a name (such as titles, legal entity status, Sr/Jr / II / III)
     - Existing [pairs data from OpenSanctions](https://www.opensanctions.org/docs/pairs/) to reduce false positives
       - The data has two entities on each line, and a judgement that states if the two records refer to the same logical item (positive) or if they are different logical items (negative)
 - Next steps
   - Schedule deployment to check against updated watchlists
-  - Apply contrastive learning with a larger set of positive and negative examples to learn good representation of personal identification information of an individual such that the fuzzy matching algorithm can be more robust in identifying the same person
+  - Apply contrastive learning with a larger set of positive and negative examples to learn a good representation of personal identification information of an individual such that the fuzzy matching algorithm can be more robust in identifying the same person
 
 ## References
 
@@ -121,13 +121,13 @@ Domain knowledge
 
 - Monetary Authority of Singapore [AML Name Screening Practices 2022](https://www.mas.gov.sg/-/media/MAS-Media-Library/publications/monographs-or-information-paper/IMD/2022/Strengthening-AML-CFT-Name-Screening-Practices.pdf)
 
-Current approach in fuzzy name matching
+Current approaches in fuzzy name matching:
 
 - <https://pypi.org/project/sparse-dot-topn/>
 - <https://medium.com/wbaa/https-medium-com-ingwbaa-boosting-selection-of-the-most-similar-entities-in-large-scale-datasets-450b3242e618>
 - <https://www.sun-analytics.nl/posts/2017-07-26-boosting-selection-of-most-similar-entities-in-large-scale-datasets/>
 
-Other approaches
+Other possible approaches:
 
 - <https://towardsdatascience.com/fuzzy-matching-at-scale-84f2bfd0c536>
 - <https://bergvca.github.io/2017/10/14/super-fast-string-matching.html>
