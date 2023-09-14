@@ -10,9 +10,9 @@
 - Available data
   - Scotiabank synthetic data: UofT_nodes.csv (KYC, Transactional data and Risk Rating)
 - Challenges in modeling
-  - Model is prone to overfitting on the 50 bad actors
+  - Model is easily prone to overfitting on the 50 bad actors given the extreme data imbalance
 - Use case
-  - Once we have identified the bad actors, we should consider punitive actions such as closing their accounts and reporting them to the authorities
+  - Once we have identified the bad actors, there may be punitive actions such as a full investigation, temporarily freezing their accounts and reporting them to the authorities
 
 ## 2) Data Understanding
 
@@ -25,7 +25,7 @@
 
 ## 3) Data preparation
 
-- See more details about pipeline to prepare data from [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
+- See more details about the pipeline to prepare data from [Task 2A README](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task2A)
   - Fix data types
   - Treat missing values
   - Derived attributes based on domain knowledge
@@ -55,9 +55,9 @@
   - XGBoost classifier
   - LightGBM classifier
 - Define procedure to test a model's quality and validity
-  - Stratified shuffle split for both train-test split and cross validation to address class imbalance
+  - Stratified shuffle split for both train-test split and cross-validation to address class imbalance
     - 60-40 train-test split to have 30 bad actors in train set and 20 bad actors in test set
-    - 3-fold cross validation to have 10 bad actors in each fold
+    - 3-fold cross-validation to have 10 bad actors in each fold
 - Shorlisted LightGBM, XGBoost and Logistic regression for hyperparameter tuning
   - <img src="../data/image/2023-08-27-11-23-05.png"  width="1000">
 
@@ -117,7 +117,7 @@
 
 ## 6) Improvements to make: [Task 3](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3)
 
-- While the model performs better than random guess, its lift in the 1st decile is still quite low
+- While the model performs better than a random guess, its lift in the 1st decile is still not significant
 - Possible improvements for the current approach
   - More data to train the model on (see [Task 3](https://github.com/WillKWL/2023_IMI_BIGDataAIHUB/blob/main/Task3))
   - More experimentation with sampling techniques to address class imbalance
